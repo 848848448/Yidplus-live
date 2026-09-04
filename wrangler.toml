@@ -8,7 +8,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "yidplus-analytics"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "eb91278f-015c-482e-9e3b-c5c305c127e3"
 
 # DASH_KEY (the dashboard password) is a SECRET — do not put it here.
 # Set it in the Cloudflare dashboard: Settings → Variables and Secrets → add
