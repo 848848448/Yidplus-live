@@ -1,0 +1,12 @@
+{
+  "name": "yidplus-live-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web Analytics HQ — track visitors, engagement minutes, and client hand-offs across all your websites. Cloudflare Pages + D1.",
+  "scripts": {
+    "deploy": "wrangler pages deploy .",
+    "db:create": "wrangler d1 create yidplus-analytics",
+    "db:schema": "wrangler d1 execute yidplus-analytics --remote --file=./schema.sql",
+    "secret": "wrangler pages secret put DASH_KEY"
+  }
+}

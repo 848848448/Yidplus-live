@@ -1,445 +1,532 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0A0A0F">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>👑 YID PLUS</title>
-<link rel="stylesheet" href="css/global.css">
-<link rel="stylesheet" href="css/home.css">
-<link rel="stylesheet" href="css/auth.css">
-<link rel="stylesheet" href="css/shorts.css">
-<link rel="stylesheet" href="css/chat.css">
-<link rel="stylesheet" href="css/music.css">
-<link rel="stylesheet" href="css/settings.css">
-<link rel="stylesheet" href="css/channel.css">
-<link rel="stylesheet" href="css/admin.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Web Analytics HQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root {
+    --bg: #EBEFF1; --surface: #FFFFFF; --surface-2: #F4F7F8;
+    --ink: #14232B; --muted: #5E7278; --faint: #8A9BA2;
+    --line: #DCE4E7; --line-2: #C9D5D9;
+    --accent: #0E7C86; --accent-strong: #0B5A62; --accent-soft: #DBEEEF;
+    --live: #1C9B54; --live-soft: #DBF0E3;
+    --building: #B9770B; --building-soft: #F6E9CE;
+    --handed: #5A67A6; --handed-soft: #E4E7F5;
+    --danger: #C6423B;
+    --shadow: 0 1px 2px rgba(20,40,48,.06), 0 8px 24px rgba(20,40,48,.06);
+    --lift: 0 12px 44px rgba(20,40,48,.18);
+    --r: 14px;
+  }
+  :root:not([data-theme="light"]) { @media (prefers-color-scheme: dark) {
+    --bg: #0D1417; --surface: #162127; --surface-2: #1C2A31;
+    --ink: #E7EFF1; --muted: #97A9B0; --faint: #6E828A;
+    --line: #26343B; --line-2: #34464E;
+    --accent: #2FB9C4; --accent-strong: #55CBD3; --accent-soft: #123840;
+    --live: #38C776; --live-soft: #10331F;
+    --building: #E0A030; --building-soft: #3A2C0E;
+    --handed: #8A96D8; --handed-soft: #1E2340;
+    --danger: #E8756D;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --lift: 0 12px 44px rgba(0,0,0,.5);
+  }}
+  :root[data-theme="dark"] {
+    --bg: #0D1417; --surface: #162127; --surface-2: #1C2A31;
+    --ink: #E7EFF1; --muted: #97A9B0; --faint: #6E828A;
+    --line: #26343B; --line-2: #34464E;
+    --accent: #2FB9C4; --accent-strong: #55CBD3; --accent-soft: #123840;
+    --live: #38C776; --live-soft: #10331F;
+    --building: #E0A030; --building-soft: #3A2C0E;
+    --handed: #8A96D8; --handed-soft: #1E2340;
+    --danger: #E8756D;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --lift: 0 12px 44px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif; line-height: 1.5;
+  }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  button { font-family: inherit; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 20px 80px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; border: 1px solid var(--line-2);
+    background: var(--surface); color: var(--ink); border-radius: 10px; padding: 9px 14px; font-size: .84rem;
+    font-weight: 600; transition: background .15s, border-color .15s, transform .05s; }
+  .btn:hover { background: var(--surface-2); }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn-ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+  .btn-danger { color: var(--danger); border-color: transparent; background: transparent; }
+  .btn-danger:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+
+  /* Login */
+  .login-scr { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+  .login-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow);
+    width: 100%; max-width: 380px; padding: 30px 28px; }
+  .login-logo { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(150deg, var(--accent), var(--accent-strong));
+    display: grid; place-items: center; color: #fff; margin-bottom: 18px; }
+  .login-logo svg { width: 28px; height: 28px; }
+  .login-card h1 { font-size: 1.3rem; margin: 0 0 4px; letter-spacing: -.02em; }
+  .login-card p { font-size: .84rem; color: var(--muted); margin: 0 0 20px; }
+  .login-card input { width: 100%; font-family: inherit; font-size: .95rem; color: var(--ink); background: var(--surface-2);
+    border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 13px; }
+  .login-card input:focus { outline: none; border-color: var(--accent); }
+  .login-err { color: var(--danger); font-size: .8rem; margin-top: 10px; min-height: 1em; }
+
+  /* Header */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 2px 20px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo { width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0; background: linear-gradient(150deg, var(--accent), var(--accent-strong));
+    display: grid; place-items: center; color: #fff; box-shadow: var(--shadow); }
+  .logo svg { width: 24px; height: 24px; }
+  .brand h1 { font-size: 1.25rem; margin: 0; line-height: 1.05; letter-spacing: -.02em; font-weight: 800; }
+  .brand .sub { font-size: .74rem; color: var(--muted); margin-top: 2px; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sync { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; }
+  .sync .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 3px var(--live-soft); }
+  .sync.busy .dot { background: var(--building); box-shadow: 0 0 0 3px var(--building-soft); }
+  .sync.err .dot { background: var(--danger); box-shadow: none; }
+
+  /* KPIs */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 15px 16px; box-shadow: var(--shadow); }
+  .kpi .k-label { font-size: .72rem; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .kpi .k-label svg { width: 15px; height: 15px; color: var(--accent); }
+  .kpi .k-value { font-size: 1.9rem; font-weight: 700; margin-top: 8px; line-height: 1; letter-spacing: -.02em; }
+  .kpi .k-foot { font-size: .7rem; color: var(--faint); margin-top: 6px; }
+
+  /* Share bar */
+  .share-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 15px 16px; box-shadow: var(--shadow); margin-bottom: 22px; }
+  .share-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 11px; }
+  .share-head .t { font-size: .82rem; font-weight: 700; }
+  .share-head .s { font-size: .72rem; color: var(--muted); }
+  .share-track { display: flex; height: 14px; border-radius: 8px; overflow: hidden; background: var(--surface-2); gap: 2px; }
+  .share-seg { min-width: 3px; transition: flex-grow .4s ease; }
+  .share-legend { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 12px; }
+  .lg { display: flex; align-items: center; gap: 7px; font-size: .74rem; color: var(--muted); }
+  .lg .sw { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .lg b { color: var(--ink); font-weight: 700; }
+
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 10px; }
+  .sec-head h2 { font-size: .96rem; margin: 0; font-weight: 800; }
+  .sec-head .count { font-size: .74rem; color: var(--muted); }
+
+  /* Site rows */
+  .sites { display: flex; flex-direction: column; gap: 9px; }
+  .site { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow);
+    padding: 13px 15px; display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; transition: border-color .15s; }
+  .site:hover { border-color: var(--line-2); }
+  .site-main { min-width: 0; display: flex; align-items: center; gap: 12px; }
+  .site-badge { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: grid; place-items: center;
+    font-weight: 700; font-size: 1rem; color: var(--accent); background: var(--accent-soft); }
+  .site-id { min-width: 0; }
+  .site-name { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .site-url { font-size: .74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+  .site-url a { color: var(--muted); text-decoration: none; }
+  .site-url a:hover { color: var(--accent); text-decoration: underline; }
+
+  .spark { width: 92px; height: 30px; flex-shrink: 0; }
+  .site-stats { display: flex; gap: 18px; }
+  .stat { text-align: center; min-width: 52px; }
+  .stat .v { font-weight: 700; font-size: 1.02rem; letter-spacing: -.01em; }
+  .stat .l { font-size: .64rem; color: var(--faint); font-weight: 600; margin-top: 1px; text-transform: uppercase; letter-spacing: .03em; }
+
+  .site-side { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .pill .d { width: 7px; height: 7px; border-radius: 50%; }
+  .pill.live { background: var(--live-soft); color: var(--live); } .pill.live .d { background: var(--live); }
+  .pill.building { background: var(--building-soft); color: var(--building); } .pill.building .d { background: var(--building); }
+  .pill.handed { background: var(--handed-soft); color: var(--handed); } .pill.handed .d { background: var(--handed); }
+  .client-chip { font-size: .72rem; color: var(--muted); display: flex; align-items: center; gap: 6px; max-width: 140px; }
+  .client-chip svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--handed); }
+  .client-chip span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-actions { display: flex; gap: 4px; }
+  .ic-btn { background: none; border: 1px solid transparent; color: var(--muted); cursor: pointer; padding: 7px; border-radius: 9px; display: grid; place-items: center; }
+  .ic-btn:hover { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+  .ic-btn svg { width: 16px; height: 16px; }
+
+  .empty { text-align: center; color: var(--muted); padding: 46px 20px; background: var(--surface); border: 1px dashed var(--line-2); border-radius: var(--r); }
+  .empty svg { width: 34px; height: 34px; color: var(--faint); margin-bottom: 10px; }
+  .empty h3 { margin: 0 0 4px; font-size: 1rem; }
+  .empty p { margin: 0 0 16px; font-size: .84rem; }
+
+  /* Modal */
+  .scrim { position: fixed; inset: 0; background: rgba(10,20,24,.5); backdrop-filter: blur(2px); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; }
+  .modal { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--lift); width: 100%; max-width: 500px; margin: auto; overflow: hidden; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+  .modal-head h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 15px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--surface-2); }
+  .icon-x { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; display: grid; place-items: center; border-radius: 8px; }
+  .icon-x:hover { background: var(--surface-2); color: var(--ink); } .icon-x svg { width: 20px; height: 20px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field > label { font-size: .76rem; font-weight: 700; color: var(--muted); }
+  .field input, .field textarea { font-family: inherit; font-size: .9rem; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px; width: 100%; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 58px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .seg { display: flex; gap: 6px; }
+  .seg button { flex: 1; cursor: pointer; border: 1px solid var(--line-2); background: var(--surface-2); color: var(--muted); border-radius: 9px; padding: 8px 6px; font-size: .78rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all .12s; }
+  .seg button .d { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .seg button[data-on="live"].on { background: var(--live-soft); color: var(--live); border-color: var(--live); }
+  .seg button[data-on="building"].on { background: var(--building-soft); color: var(--building); border-color: var(--building); }
+  .seg button[data-on="handed"].on { background: var(--handed-soft); color: var(--handed); border-color: var(--handed); }
+  .foot-fields { border-top: 1px dashed var(--line); margin-top: 2px; padding-top: 15px; display: flex; flex-direction: column; gap: 15px; }
+  .ff-title { font-size: .78rem; font-weight: 800; color: var(--handed); display: flex; align-items: center; gap: 7px; }
+  .ff-title svg { width: 15px; height: 15px; }
+
+  /* Install modal */
+  .snippet-note { font-size: .84rem; color: var(--muted); margin: 0; }
+  .snippet-box { position: relative; background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 13px 14px; }
+  .snippet-box code { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: var(--ink); word-break: break-all; white-space: pre-wrap; display: block; line-height: 1.6; }
+  .steps { margin: 0; padding-inline-start: 18px; font-size: .82rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+  .steps b { color: var(--ink); }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--surface); font-size: .84rem; font-weight: 600; padding: 10px 18px; border-radius: 999px; box-shadow: var(--lift); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 90; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 760px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .site { grid-template-columns: 1fr auto; }
+    .spark { display: none; }
+    .site-stats { grid-column: 1 / -1; justify-content: flex-start; gap: 26px; border-top: 1px solid var(--line); padding-top: 11px; margin-top: 2px; }
+    .site-url { max-width: 190px; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ════ AUTH SCREEN ════ -->
-<div class="screen active" id="screen-auth">
-  <div class="auth-center">
-    <div class="auth-logo">
-      <div class="auth-crown">👑</div>
-      <div class="auth-title">YID PLUS</div>
-      <div class="auth-sub">Jewish Entertainment Platform</div>
-    </div>
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="authTab('login')">Sign In</button>
-        <button class="auth-tab" onclick="authTab('register')">Register</button>
-      </div>
-      <div class="auth-msg" id="auth-msg"></div>
-      <!-- LOGIN -->
-      <div id="auth-login">
-        <input class="field" type="email" id="l-email" placeholder="Email address">
-        <input class="field" type="password" id="l-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-        <div class="remember-row">
-          <label class="remember-label" onclick="toggleRemember()">
-            <div class="toggle-sw" id="rem-tog"></div>
-            Remember Me
-          </label>
-          <span class="forgot-link">Forgot password?</span>
-        </div>
-        <button class="btn-primary" id="l-btn" onclick="doLogin()">
-          <span id="l-btn-txt">Sign In</span>
-          <div class="loading-dots" id="l-btn-dots"><span></span><span></span><span></span></div>
-        </button>
-      </div>
-      <!-- REGISTER -->
-      <div id="auth-register" style="display:none">
-        <input class="field" type="email"    id="r-email" placeholder="Email address">
-        <div class="field-row">
-          <input class="field" type="text"  id="r-nick"  placeholder="Nickname">
-          <input class="field" type="tel"   id="r-phone" placeholder="Phone (private)">
-        </div>
-        <input class="field" type="password" id="r-pass"  placeholder="Password (min 6)">
-        <input class="field" type="password" id="r-pass2" placeholder="Confirm password">
-        <button class="btn-primary" id="r-btn" onclick="doRegister()">
-          <span id="r-btn-txt">Create Account</span>
-          <div class="loading-dots" id="r-btn-dots"><span></span><span></span><span></span></div>
-        </button>
-      </div>
-      <div class="firebase-hint">
-        🔥 Connected to Firebase · Project: <strong>shorts-e05cc</strong>
-      </div>
-    </div>
-  </div>
+<!-- LOGIN -->
+<div class="login-scr" id="login" hidden>
+  <form class="login-card" id="login-form">
+    <div class="login-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M9 21V9"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+    <h1>Web Analytics HQ</h1>
+    <p>Enter your dashboard key to continue.</p>
+    <input id="login-key" type="password" placeholder="Dashboard key" autocomplete="current-password" autofocus>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:14px">Sign in</button>
+  </form>
 </div>
 
-<!-- ════ HOME SCREEN ════ -->
-<div class="screen" id="screen-home">
+<!-- APP -->
+<div class="wrap" id="app" hidden>
   <div class="topbar">
-    <div class="topbar-logo">👑 <span id="home-app-title">YID PLUS</span></div>
-    <div class="topbar-icons">
-      <div class="icon-btn" onclick="toast('Search coming soon')">🔍</div>
-      <div class="icon-btn" style="position:relative" onclick="navTo('chats')">🔔<div class="badge" id="notif-badge" style="display:none">3</div></div>
-      <div class="icon-btn" onclick="navTo('settings')">👤</div>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M9 21V9"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+      <div>
+        <h1>Web Analytics HQ</h1>
+        <div class="sub">All the sites you build, in one place</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="sync" id="sync"><span class="dot"></span><span id="sync-txt">Live</span></span>
+      <button class="btn" id="export-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Export</button>
+      <button class="btn btn-primary" id="add-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New site</button>
+      <button class="btn btn-ghost" id="signout-btn" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></button>
     </div>
   </div>
-  <div class="scroll-area" style="padding-bottom:80px">
-    <div id="broadcast-bar"></div>
-    <div class="status-section">
-      <div class="status-label">Status Updates</div>
-      <div class="h-scroll" id="home-status-row"></div>
-    </div>
-    <div class="ad-section">
-      <div class="ad-sponsored-label">Sponsored</div>
-      <div class="ad-frame" id="ad-frame"></div>
-      <div class="ad-dots-row" id="ad-dots"></div>
-    </div>
-    <div class="section-hdr"><h2>🎬 Trending Shorts</h2><button class="see-all" onclick="navTo('shorts')">See All →</button></div>
-    <div class="h-scroll" style="padding:0 0.75rem 0.5rem" id="home-shorts-row"></div>
-    <div class="section-hdr"><h2>⭐ Featured Channels</h2><button class="see-all" onclick="toast('Browse all')">See All →</button></div>
-    <div class="h-scroll" style="padding:0 0.75rem 0.5rem" id="home-channels-row"></div>
-    <div class="section-hdr"><h2>📰 Latest from Following</h2></div>
-    <div style="padding:0 0.75rem" id="home-feed"></div>
+
+  <div class="kpis" id="kpis"></div>
+  <div class="share-card" id="share-card" hidden>
+    <div class="share-head"><span class="t">Share of visitors</span><span class="s" id="share-total"></span></div>
+    <div class="share-track" id="share-track"></div>
+    <div class="share-legend" id="share-legend"></div>
   </div>
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-nav="home"     onclick="navTo('home')">    <span class="nav-icon">🏠</span><span class="nav-label" data-nav-label="home">Home</span></button>
-    <button class="nav-item"        data-nav="shorts"   onclick="navTo('shorts')">  <span class="nav-icon">🎬</span><span class="nav-label" data-nav-label="shorts">Shorts</span></button>
-    <button class="nav-item"        data-nav="music"    onclick="navTo('music')">   <span class="nav-icon">🎵</span><span class="nav-label" data-nav-label="music">Music</span></button>
-    <button class="nav-item"        data-nav="chats"    onclick="navTo('chats')">   <span class="nav-icon">💬</span><span class="nav-label" data-nav-label="chats">Chats</span></button>
-    <button class="nav-item"        data-nav="settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span><span class="nav-label" data-nav-label="settings">Settings</span></button>
-  </nav>
+
+  <div class="sec-head"><h2>Websites</h2><span class="count" id="sites-count"></span></div>
+  <div class="sites" id="sites"></div>
 </div>
 
-<!-- ════ SHORTS SCREEN ════ -->
-<div class="screen" id="screen-shorts">
-  <div class="shorts-topbar">
-    <div class="topbar-logo" style="-webkit-text-fill-color:var(--gold)">👑 YID PLUS</div>
-    <div style="font-size:0.9rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.9)">Shorts</div>
-    <div class="shorts-upload-btn" onclick="openUploadModal()">＋</div>
-  </div>
-  <div class="prog-dots-col" id="prog-dots"></div>
-  <div class="swipe-cont" id="swipe-cont"></div>
-  <nav class="bottom-nav shorts-nav">
-    <button class="nav-item"        data-nav="home"     onclick="navTo('home')">    <span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-item active" data-nav="shorts"   onclick="navTo('shorts')">  <span class="nav-icon">🎬</span><span class="nav-label">Shorts</span></button>
-    <button class="nav-item"        data-nav="music"    onclick="navTo('music')">   <span class="nav-icon">🎵</span><span class="nav-label">Music</span></button>
-    <button class="nav-item"        data-nav="chats"    onclick="navTo('chats')">   <span class="nav-icon">💬</span><span class="nav-label">Chats</span></button>
-    <button class="nav-item"        data-nav="settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
-  </nav>
-  <!-- Comments Drawer -->
-  <div class="comments-drawer" id="comments-drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-header">
-      <div>💬 Comments <span id="cmt-count" class="cmt-count-badge"></span></div>
-      <button onclick="closeComments()">✕</button>
-    </div>
-    <div class="comments-list" id="comments-list"></div>
-    <div class="comment-input-row">
-      <input class="comment-input" id="cmt-input" placeholder="Add a comment..." maxlength="200">
-      <button class="cmt-send-btn" onclick="sendComment()">➤</button>
-    </div>
-  </div>
-  <!-- Upload Modal -->
-  <div class="modal-overlay" id="upload-modal" onclick="if(event.target===this)closeUploadModal()">
-    <div class="modal-sheet">
-      <div class="modal-title">📤 Upload a Short</div>
-      <div class="upload-options-grid">
-        <div class="upload-opt" onclick="document.getElementById('video-file-input').click()">
-          <div class="upload-opt-icon">📁</div>
-          <div class="upload-opt-label">Choose from Library</div>
-        </div>
-        <div class="upload-opt" onclick="toast('Camera unavailable in browser')">
-          <div class="upload-opt-icon">📷</div>
-          <div class="upload-opt-label">Record with Camera</div>
+<!-- Editor modal -->
+<div class="scrim" id="scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="modal-head"><h3 id="m-title">New site</h3><button class="icon-x" id="m-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="field"><label for="f-name">Site name</label><input id="f-name" type="text" placeholder="e.g. Acme Landing" autocomplete="off"></div>
+      <div class="field"><label for="f-url">Web address</label><input id="f-url" type="text" placeholder="https://example.com" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label>Status</label>
+        <div class="seg" id="f-status">
+          <button type="button" data-on="live"><span class="d"></span>Live</button>
+          <button type="button" data-on="building"><span class="d"></span>Building</button>
+          <button type="button" data-on="handed"><span class="d"></span>Handed off</button>
         </div>
       </div>
-      <div class="upload-progress-wrap" id="upload-progress-wrap" style="display:none">
-        <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-fill"></div></div>
-        <div class="upload-progress-label" id="upload-label">Uploading...</div>
-      </div>
-      <button class="modal-cancel" onclick="closeUploadModal()">Cancel</button>
-      <input type="file" id="video-file-input" accept="video/*" style="display:none" onchange="handleVideoUpload(event)">
-    </div>
-  </div>
-</div>
-
-<!-- ════ CHAT SCREEN ════ -->
-<div class="screen" id="screen-chats">
-  <div class="topbar">
-    <div class="topbar-logo">👑 Chats</div>
-    <div class="topbar-icons">
-      <div class="icon-btn" onclick="toast('New group coming soon')">👥</div>
-      <div class="icon-btn" onclick="toast('New chat coming soon')">✏️</div>
-    </div>
-  </div>
-  <div class="chat-search-wrap">
-    <input class="chat-search-input" placeholder="Search chats, groups..." id="chat-search" oninput="filterChatList()">
-  </div>
-  <div class="chat-tabs-row">
-    <button class="ctab active" onclick="switchChatTab(this,'all')">All</button>
-    <button class="ctab" onclick="switchChatTab(this,'private')">Private</button>
-    <button class="ctab" onclick="switchChatTab(this,'groups')">Groups</button>
-  </div>
-  <div class="scroll-area" id="chat-list-area"></div>
-  <nav class="bottom-nav">
-    <button class="nav-item"        data-nav="home"     onclick="navTo('home')">    <span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-item"        data-nav="shorts"   onclick="navTo('shorts')">  <span class="nav-icon">🎬</span><span class="nav-label">Shorts</span></button>
-    <button class="nav-item"        data-nav="music"    onclick="navTo('music')">   <span class="nav-icon">🎵</span><span class="nav-label">Music</span></button>
-    <button class="nav-item active" data-nav="chats"    onclick="navTo('chats')">   <span class="nav-icon">💬</span><span class="nav-label">Chats</span></button>
-    <button class="nav-item"        data-nav="settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
-  </nav>
-</div>
-
-<!-- ════ CHAT ROOM SCREEN ════ -->
-<div class="screen" id="screen-chatroom">
-  <div class="topbar" id="chatroom-topbar">
-    <div class="icon-btn" onclick="navTo('chats')" style="margin-right:0.4rem">‹</div>
-    <div class="chatroom-avatar" id="cr-avatar"></div>
-    <div class="chatroom-info">
-      <div class="chatroom-name"    id="cr-name"></div>
-      <div class="chatroom-status" id="cr-status"></div>
-    </div>
-    <div class="topbar-icons">
-      <div class="icon-btn" onclick="toast('Voice call')">📞</div>
-      <div class="icon-btn" onclick="toast('Video call')">📹</div>
-    </div>
-  </div>
-  <div class="join-group-banner" id="join-banner" style="display:none">
-    <span>Join this group to send messages</span>
-    <button class="join-group-btn" onclick="joinCurrentGroup()">Join Group</button>
-  </div>
-  <div class="reply-preview" id="reply-preview" style="display:none">
-    <div><strong id="reply-nick"></strong> <span id="reply-snippet"></span></div>
-    <button onclick="cancelReply()">✕</button>
-  </div>
-  <div class="scroll-area chat-messages" id="chat-messages"></div>
-  <div class="typing-bar" id="typing-bar" style="display:none">
-    <div class="typing-dots"><span></span><span></span><span></span></div>
-    <div class="typing-label" id="typing-label"></div>
-  </div>
-  <div class="sticker-picker" id="sticker-picker"></div>
-  <div class="chat-input-bar" id="chat-input-bar">
-    <div class="attach-wrap">
-      <button class="chat-icon-btn" onclick="toggleAttach()">📎</button>
-      <div class="attach-sheet" id="attach-sheet">
-        <div class="attach-opt" onclick="triggerChatMedia('image/*')"><div class="attach-opt-icon">🖼️</div><div>Photo</div></div>
-        <div class="attach-opt" onclick="triggerChatMedia('video/*')"><div class="attach-opt-icon">🎬</div><div>Video</div></div>
-        <div class="attach-opt" onclick="startVoiceRecord()"><div class="attach-opt-icon">🎤</div><div>Voice</div></div>
-        <div class="attach-opt" onclick="triggerChatMedia('*/*')"><div class="attach-opt-icon">📁</div><div>File</div></div>
+      <div class="foot-fields">
+        <div class="ff-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Client (if handed to a company)</div>
+        <div class="row2">
+          <div class="field"><label for="f-client">Company / client</label><input id="f-client" type="text" placeholder="Leave empty if it's yours" autocomplete="off"></div>
+          <div class="field"><label for="f-contact">Contact</label><input id="f-contact" type="text" placeholder="email / phone" autocomplete="off"></div>
+        </div>
+        <div class="field"><label for="f-notes">Notes</label><textarea id="f-notes" placeholder="Plans, price, deadlines…"></textarea></div>
       </div>
     </div>
-    <textarea class="chat-input" id="chat-input" placeholder="Message..." rows="1" oninput="onChatType()" onkeydown="onChatKey(event)"></textarea>
-    <button class="chat-icon-btn" onclick="toggleStickers()">😊</button>
-    <button class="voice-record-btn" id="voice-record-btn" onclick="toggleVoiceRecord()">🎙️</button>
-    <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMsg()" style="display:none">➤</button>
-    <input type="file" id="chat-media-input" style="display:none" onchange="handleChatMedia(event)">
-  </div>
-</div>
-
-<!-- ════ MUSIC SCREEN ════ -->
-<div class="screen" id="screen-music">
-  <div class="topbar">
-    <div class="topbar-logo">👑 Music</div>
-    <div class="topbar-icons">
-      <div class="icon-btn" onclick="toast('Search music')">🔍</div>
-      <div class="icon-btn" onclick="openLikedSongs()">❤️</div>
-      <div class="icon-btn" onclick="openMusicUpload()">＋</div>
-    </div>
-  </div>
-  <div class="music-tabs-row">
-    <button class="mtab active" onclick="switchMusicTab(this,'all')">All</button>
-    <button class="mtab" onclick="switchMusicTab(this,'albums')">Albums</button>
-    <button class="mtab" onclick="switchMusicTab(this,'singles')">Singles</button>
-    <button class="mtab" onclick="switchMusicTab(this,'videos')">Videos</button>
-    <button class="mtab" onclick="switchMusicTab(this,'liked')">❤️ Liked</button>
-  </div>
-  <div class="scroll-area" style="padding-bottom:160px" id="music-scroll">
-    <div id="sec-albums"><div class="section-hdr"><h2>💿 Albums & CDs</h2><button class="see-all">See All →</button></div><div class="h-scroll" style="padding:0 1rem 0.75rem" id="albums-row"></div></div>
-    <div id="sec-singles"><div class="section-hdr"><h2>🎵 Singles</h2><button class="see-all">See All →</button></div><div class="tracks-list" id="singles-list"></div></div>
-    <div id="sec-videos"><div class="section-hdr"><h2>🎬 Music Videos</h2><button class="see-all">See All →</button></div><div class="h-scroll" style="padding:0 1rem 0.75rem" id="mv-row"></div></div>
-    <div id="sec-liked" style="display:none"><div class="section-hdr"><h2>❤️ My Liked Songs</h2></div><div class="tracks-list" id="liked-list"></div></div>
-  </div>
-  <nav class="bottom-nav">
-    <button class="nav-item"        data-nav="home"     onclick="navTo('home')">    <span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-item"        data-nav="shorts"   onclick="navTo('shorts')">  <span class="nav-icon">🎬</span><span class="nav-label">Shorts</span></button>
-    <button class="nav-item active" data-nav="music"    onclick="navTo('music')">   <span class="nav-icon">🎵</span><span class="nav-label">Music</span></button>
-    <button class="nav-item"        data-nav="chats"    onclick="navTo('chats')">   <span class="nav-icon">💬</span><span class="nav-label">Chats</span></button>
-    <button class="nav-item"        data-nav="settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
-  </nav>
-</div>
-
-<!-- Mini Player -->
-<div class="mini-player" id="mini-player" onclick="openFullPlayer()" style="display:none">
-  <div class="mini-progress-bar" id="mini-progress"></div>
-  <div class="mini-thumb" id="mini-thumb">🎵</div>
-  <div class="mini-info"><div class="mini-name" id="mini-name"></div><div class="mini-artist" id="mini-artist"></div></div>
-  <div class="mini-controls" onclick="event.stopPropagation()">
-    <button class="mini-ctrl" onclick="prevTrack()">⏮</button>
-    <button class="mini-play-btn" id="mini-play-btn" onclick="togglePlay()">⏸</button>
-    <button class="mini-ctrl" onclick="nextTrack()">⏭</button>
-  </div>
-</div>
-
-<!-- Full Player -->
-<div class="screen" id="screen-player">
-  <div class="player-topbar">
-    <div class="icon-btn" onclick="navTo('music')">‹</div>
-    <div style="font-size:0.73rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)">Now Playing</div>
-    <div class="icon-btn" onclick="shareCurrentTrack()">📤</div>
-  </div>
-  <div class="scroll-area">
-    <div class="mode-toggle-row">
-      <button class="mode-btn active" id="song-mode-btn" onclick="setPlayerMode('song')">🎵 Song Mode</button>
-      <button class="mode-btn"        id="video-mode-btn" onclick="setPlayerMode('video')">🎬 Video Mode</button>
-    </div>
-    <div class="artwork-wrap" id="artwork-wrap"><div class="artwork playing" id="artwork"><div class="artwork-bg" id="artwork-bg"></div><div class="artwork-emoji" id="artwork-emoji">🎵</div></div></div>
-    <div class="video-player-wrap" id="video-player-wrap" style="display:none"><div class="video-player" id="video-player" onclick="togglePlay()"><div id="vp-emoji" style="font-size:5rem;position:relative;z-index:1"></div><div class="vp-overlay"><div class="vp-play-btn" id="vp-btn">⏸</div></div></div></div>
-    <div class="player-track-meta">
-      <div><div class="player-track-name" id="player-name">Track</div><div class="player-track-artist" id="player-artist">Artist</div></div>
-      <div style="display:flex;gap:0.5rem;align-items:center">
-        <div class="heart-big" id="heart-big" onclick="toggleCurrentLike()">🤍</div>
-        <div class="icon-btn" onclick="shareCurrentTrack()">📤</div>
-      </div>
-    </div>
-    <div class="progress-section">
-      <div class="progress-bar" id="prog-bar" onclick="seekTrack(event)">
-        <div class="progress-fill" id="prog-fill"></div>
-        <div class="progress-dot"  id="prog-dot"></div>
-      </div>
-      <div class="progress-times"><span id="t-cur">0:00</span><span id="t-tot">0:00</span></div>
-    </div>
-    <div class="player-controls">
-      <button class="ctrl-btn" id="shuf-btn" onclick="toggleShuffle()">🔀</button>
-      <button class="ctrl-btn" onclick="prevTrack()">⏮</button>
-      <button class="play-big-btn" id="play-big-btn" onclick="togglePlay()">⏸</button>
-      <button class="ctrl-btn" onclick="nextTrack()">⏭</button>
-      <button class="ctrl-btn" id="rep-btn" onclick="toggleRepeat()">🔁</button>
-    </div>
-    <div class="queue-section"><div class="queue-label">Up Next</div><div id="queue-list"></div></div>
-  </div>
-</div>
-
-<!-- ════ SETTINGS SCREEN ════ -->
-<div class="screen" id="screen-settings">
-  <div class="topbar">
-    <div class="topbar-logo">⚙️ Settings</div>
-    <div style="font-size:0.72rem;color:var(--muted)">v1.0.0</div>
-  </div>
-  <div class="scroll-area" style="padding-bottom:80px">
-    <div class="settings-profile-header">
-      <div class="settings-avatar-wrap">
-        <div class="settings-avatar" id="settings-avatar">👤</div>
-        <div class="settings-avatar-edit" onclick="document.getElementById('avatar-input').click()">✏️</div>
-        <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
-      </div>
-      <div class="settings-nick" id="settings-nick">@User</div>
-      <div class="settings-email" id="settings-email">user@email.com</div>
-      <button class="edit-profile-pill" onclick="openEditProfileModal()">✏️ Edit Profile</button>
-    </div>
-    <!-- Settings rows built by JS -->
-    <div id="settings-body"></div>
-    <div class="logout-row" onclick="doLogout()"><span>🚪</span><span>Sign Out</span></div>
-  </div>
-  <nav class="bottom-nav">
-    <button class="nav-item"        data-nav="home"     onclick="navTo('home')">    <span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-item"        data-nav="shorts"   onclick="navTo('shorts')">  <span class="nav-icon">🎬</span><span class="nav-label">Shorts</span></button>
-    <button class="nav-item"        data-nav="music"    onclick="navTo('music')">   <span class="nav-icon">🎵</span><span class="nav-label">Music</span></button>
-    <button class="nav-item"        data-nav="chats"    onclick="navTo('chats')">   <span class="nav-icon">💬</span><span class="nav-label">Chats</span></button>
-    <button class="nav-item active" data-nav="settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
-  </nav>
-</div>
-
-<!-- ════ CHANNEL SCREEN ════ -->
-<div class="screen" id="screen-channel">
-  <div class="channel-cover" id="channel-cover">
-    <div class="channel-topbar-over">
-      <div class="icon-btn" style="background:rgba(0,0,0,0.4);color:#fff" onclick="navTo(APP.prevScreen||'home')">‹</div>
-      <div style="display:flex;gap:0.4rem">
-        <div class="icon-btn" style="background:rgba(0,0,0,0.4);color:#fff" onclick="shareChannel()">📤</div>
-        <div class="icon-btn" style="background:rgba(0,0,0,0.4);color:#fff" onclick="toast('Options')">⋯</div>
-      </div>
-    </div>
-    <div class="channel-cover-emoji" id="ch-cover-emoji"></div>
-  </div>
-  <div class="scroll-area" style="padding-bottom:20px">
-    <div class="ch-profile-row">
-      <div class="ch-avatar-big" id="ch-avatar-big"></div>
-      <div class="ch-profile-meta">
-        <div class="ch-profile-name" id="ch-profile-name"></div>
-        <div class="ch-profile-handle" id="ch-profile-handle"></div>
-        <div class="ch-profile-bio" id="ch-profile-bio"></div>
-      </div>
-    </div>
-    <div class="ch-stats-row">
-      <div class="ch-stat"><div class="ch-stat-val" id="ch-followers">0</div><div class="ch-stat-lbl">Followers</div></div>
-      <div class="ch-stat"><div class="ch-stat-val" id="ch-following">0</div><div class="ch-stat-lbl">Following</div></div>
-      <div class="ch-stat"><div class="ch-stat-val" id="ch-views">0</div><div class="ch-stat-lbl">Total Views</div></div>
-      <div class="ch-stat"><div class="ch-stat-val" id="ch-shorts-ct">0</div><div class="ch-stat-lbl">Shorts</div></div>
-    </div>
-    <div class="ch-action-row">
-      <button class="ch-follow-btn" id="ch-follow-btn" onclick="toggleChannelFollow()">+ Follow</button>
-      <button class="ch-dm-btn" onclick="openChannelDM()">💬</button>
-      <button class="ch-notif-btn" id="ch-notif-btn" onclick="toggleChannelNotif()">🔔</button>
-    </div>
-    <div class="channel-tabs-row">
-      <button class="chtab active" onclick="switchChTab(this,'shorts')">🎥 Shorts</button>
-      <button class="chtab" onclick="switchChTab(this,'music')">🎵 Music</button>
-      <button class="chtab" onclick="switchChTab(this,'about')">📜 About</button>
-    </div>
-    <div id="ch-shorts-tab"><div class="ch-shorts-grid" id="ch-shorts-grid"></div></div>
-    <div id="ch-music-tab"  style="display:none"><div id="ch-music-list"></div></div>
-    <div id="ch-about-tab"  style="display:none"><div class="ch-about-wrap" id="ch-about-wrap"></div></div>
-  </div>
-</div>
-
-<!-- ════ ADMIN SCREEN ════ -->
-<div class="screen" id="screen-admin">
-  <div class="admin-topbar">
-    <div style="display:flex;align-items:center;gap:0.5rem">
-      <span style="font-size:1.2rem">👑</span>
-      <span class="topbar-logo">YID PLUS</span>
-      <span class="admin-role-badge" id="admin-role-badge">OWNER</span>
-    </div>
-    <button class="admin-logout-btn" onclick="doLogout()">Logout</button>
-  </div>
-  <div class="admin-nav-row" id="admin-nav-row"></div>
-  <div class="scroll-area" id="admin-content"></div>
-</div>
-
-<!-- ════ GLOBAL UI ════ -->
-<!-- Status Viewer Overlay -->
-<div class="sv-overlay" id="sv-overlay">
-  <div class="sv-header">
-    <div class="sv-bars" id="sv-bars"></div>
-    <div class="sv-top-row">
-      <div class="sv-user-info"><div class="sv-avatar" id="sv-avatar"></div><div><div class="sv-nick" id="sv-nick"></div><div class="sv-time" id="sv-time"></div></div></div>
-      <div style="display:flex;gap:0.4rem">
-        <button class="sv-ctrl" id="sv-mute-btn" onclick="svToggleMute()">🔊</button>
-        <button class="sv-ctrl" onclick="closeSV()">✕</button>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="m-delete" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>Delete</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="btn btn-ghost" id="m-cancel">Cancel</button>
+        <button class="btn btn-primary" id="m-save">Save</button>
       </div>
     </div>
   </div>
-  <div class="sv-body">
-    <div class="sv-tap-zone sv-left"  onclick="svPrev()"></div>
-    <div class="sv-tap-zone sv-right" onclick="svNext()"></div>
-    <div class="sv-slide-content" id="sv-slide"></div>
-  </div>
-  <div class="sv-footer">
-    <input class="sv-reply-input" placeholder="Reply..." id="sv-reply-input">
-    <div class="sv-like-btn" onclick="svLike(this)">🤍</div>
+</div>
+
+<!-- Install modal -->
+<div class="scrim" id="install-scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="i-title">
+    <div class="modal-head"><h3 id="i-title">Install tracking</h3><button class="icon-x" id="i-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <p class="snippet-note">Paste this one line into <b id="i-sitename">your site</b>, just before the closing <code style="font-family:'JetBrains Mono',monospace">&lt;/body&gt;</code> tag:</p>
+      <div class="snippet-box"><code id="i-snippet"></code></div>
+      <button class="btn btn-primary" id="i-copy" style="justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy snippet</button>
+      <ol class="steps">
+        <li><b>Add the line</b> to every page of that website (in a shared template it appears everywhere).</li>
+        <li><b>Visit the site</b> — your first visitor shows up here within seconds.</li>
+        <li>No cookies, no personal data — just visits and active time.</li>
+      </ol>
+    </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div id="app-toast"></div>
+<div class="toast" id="toast"></div>
 
-<!-- ════ SCRIPTS ════ -->
-<script src="js/app.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/home.js"></script>
-<script src="js/shorts.js"></script>
-<script src="js/chat.js"></script>
-<script src="js/music.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/channel.js"></script>
-<script src="js/admin.js"></script>
-<!-- Firebase services used directly in each JS module via ESM -->
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var KEYNAME = 'wahq_key';
+  var key = null; try { key = localStorage.getItem(KEYNAME); } catch (e) {}
+
+  var STATUS = { live: { label: 'Live', cls: 'live' }, building: { label: 'Building', cls: 'building' }, handed: { label: 'Handed off', cls: 'handed' } };
+  var SEG_COLORS = ['#0E7C86', '#1C9B54', '#B9770B', '#5A67A6', '#C6423B', '#2A9D8F', '#8A5A9E', '#D98324'];
+  var state = { sites: [], editingId: null, formStatus: 'building', poll: null };
+
+  var fmt = function (n) { n = Number(n) || 0; if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 ? 1 : 0) + 'M'; if (n >= 10000) return Math.round(n / 1000) + 'K'; return n.toLocaleString('en-US'); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]); }); };
+  var initials = function (s) { s = (s || '?').trim(); return s ? s.slice(0, 1).toUpperCase() : '?'; };
+  var mins = function (m) { m = Number(m) || 0; if (m < 60) return m + ' min'; var h = m / 60; return (h >= 100 ? Math.round(h) : h.toFixed(1).replace(/\.0$/, '')) + ' h'; };
+
+  function api(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ 'X-Dash-Key': key }, opts.headers || {});
+    return fetch('/api' + path, opts);
+  }
+  function toast(msg) { var t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('show'); }, 1800); }
+  function setSync(kind, txt) { var el = $('#sync'); el.className = 'sync' + (kind ? ' ' + kind : ''); $('#sync-txt').textContent = txt; }
+
+  // ── Auth flow ───────────────────────────────────────────────
+  function showLogin(msg) {
+    $('#app').hidden = true; $('#login').hidden = false;
+    $('#login-err').textContent = msg || '';
+    setTimeout(function () { $('#login-key').focus(); }, 30);
+  }
+  function showApp() { $('#login').hidden = true; $('#app').hidden = false; }
+
+  $('#login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = $('#login-key').value.trim();
+    if (!v) return;
+    key = v; setSync('busy', 'Checking…');
+    load(true).then(function (ok) {
+      if (ok) { try { localStorage.setItem(KEYNAME, key); } catch (e) {} showApp(); startPoll(); }
+      else { key = null; showLogin('That key was not accepted. Try again.'); }
+    });
+  });
+  $('#signout-btn').addEventListener('click', function () {
+    try { localStorage.removeItem(KEYNAME); } catch (e) {}
+    key = null; stopPoll(); showLogin('');
+    $('#login-key').value = '';
+  });
+
+  // ── Load + render ───────────────────────────────────────────
+  function load(silent) {
+    if (!silent) setSync('busy', 'Refreshing…');
+    return api('/sites').then(function (r) {
+      if (r.status === 401 || r.status === 500) { return r.json().then(function (j) { if (!silent) setSync('err', 'Key error'); throw { auth: true, msg: (j && j.error) || 'Unauthorized' }; }); }
+      return r.json();
+    }).then(function (j) {
+      state.sites = (j && j.sites) || [];
+      render(); setSync('', 'Live');
+      return true;
+    }).catch(function (err) {
+      if (err && err.auth) return false;
+      setSync('err', 'Offline'); return true; // network blip — keep showing last data
+    });
+  }
+  function startPoll() { stopPoll(); state.poll = setInterval(function () { if (!$('#app').hidden) load(true); }, 20000); }
+  function stopPoll() { if (state.poll) { clearInterval(state.poll); state.poll = null; } }
+
+  function render() {
+    renderKpis(); renderShare(); renderSites();
+    $('#sites-count').textContent = state.sites.length ? (state.sites.length + (state.sites.length === 1 ? ' site' : ' sites')) : '';
+  }
+
+  function renderKpis() {
+    var v = 0, m = 0, clients = {};
+    state.sites.forEach(function (s) { v += s.visitors || 0; m += s.minutes || 0; if ((s.client_name || '').trim()) clients[s.client_name.trim()] = 1; });
+    var cards = [
+      { l: 'Websites', ic: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/>', val: fmt(state.sites.length), foot: state.sites.length ? 'in your portfolio' : 'add your first one' },
+      { l: 'Total visitors', ic: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>', val: fmt(v), foot: 'unique, across all sites' },
+      { l: 'Minutes spent', ic: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>', val: fmt(m), foot: '≈ ' + mins(m) + ' of attention' },
+      { l: 'Active clients', ic: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>', val: fmt(Object.keys(clients).length), foot: 'sites handed off' }
+    ];
+    $('#kpis').innerHTML = cards.map(function (c) {
+      return '<div class="kpi"><div class="k-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + c.ic + '</svg>' + c.l + '</div><div class="k-value mono">' + c.val + '</div><div class="k-foot">' + c.foot + '</div></div>';
+    }).join('');
+  }
+
+  function renderShare() {
+    var withV = state.sites.filter(function (s) { return (s.visitors || 0) > 0; });
+    var total = withV.reduce(function (a, s) { return a + (s.visitors || 0); }, 0);
+    var card = $('#share-card');
+    if (withV.length < 2 || !total) { card.hidden = true; return; }
+    card.hidden = false;
+    var sorted = withV.slice().sort(function (a, b) { return (b.visitors || 0) - (a.visitors || 0); });
+    $('#share-total').textContent = fmt(total) + ' visitors';
+    $('#share-track').innerHTML = sorted.map(function (s, i) { var p = (s.visitors || 0) / total * 100; return '<div class="share-seg" style="flex-grow:' + p + ';background:' + SEG_COLORS[i % SEG_COLORS.length] + '" title="' + esc(s.name) + ' · ' + Math.round(p) + '%"></div>'; }).join('');
+    $('#share-legend').innerHTML = sorted.slice(0, 6).map(function (s, i) { var p = Math.round((s.visitors || 0) / total * 100); return '<span class="lg"><span class="sw" style="background:' + SEG_COLORS[i % SEG_COLORS.length] + '"></span>' + esc(s.name) + ' · <b>' + p + '%</b></span>'; }).join('');
+  }
+
+  function sparkline(trend) {
+    var t = (trend && trend.length) ? trend : [0];
+    var w = 92, h = 30, pad = 3, max = Math.max.apply(null, t.concat([1]));
+    var n = t.length, dx = n > 1 ? (w - pad * 2) / (n - 1) : 0;
+    var pts = t.map(function (val, i) { var x = pad + i * dx; var y = h - pad - (val / max) * (h - pad * 2); return [x, y]; });
+    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+    var area = 'M' + pad + ' ' + (h - pad) + ' ' + line.replace('M', 'L').slice(1) + ' L' + (pad + (n - 1) * dx).toFixed(1) + ' ' + (h - pad) + ' Z';
+    var last = pts[pts.length - 1];
+    return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<path d="' + area + '" fill="var(--accent)" opacity=".12"/>' +
+      '<path d="' + line + '" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.2" fill="var(--accent)"/></svg>';
+  }
+
+  function renderSites() {
+    var host = $('#sites');
+    if (!state.sites.length) {
+      host.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><h3>No sites yet</h3><p>Add a website, then install its one‑line tracking snippet to start counting real visitors.</p><button class="btn btn-primary" style="margin:0 auto" onclick="document.getElementById(\'add-btn\').click()">Add your first site</button></div>';
+      return;
+    }
+    host.innerHTML = state.sites.map(function (s) {
+      var st = STATUS[s.status] || STATUS.building;
+      var url = (s.url || '').replace(/^https?:\/\//, '');
+      var client = (s.client_name || '').trim();
+      var clientHtml = client ? '<span class="client-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>' + esc(client) + '</span></span>' : '';
+      var href = s.url && /^https?:/.test(s.url) ? esc(s.url) : (url ? 'https://' + esc(url) : '');
+      return '<div class="site" data-id="' + esc(s.id) + '">' +
+          '<div class="site-main"><div class="site-badge">' + esc(initials(s.name)) + '</div><div class="site-id"><div class="site-name">' + esc(s.name || 'Untitled') + '</div><div class="site-url">' + (url ? '<a href="' + href + '" target="_blank" rel="noopener">' + esc(url) + '</a>' : '—') + '</div></div></div>' +
+          sparkline(s.trend) +
+          '<div class="site-stats"><div class="stat"><div class="v mono">' + fmt(s.visitors) + '</div><div class="l">visitors</div></div><div class="stat"><div class="v mono">' + fmt(s.minutes) + '</div><div class="l">minutes</div></div><div class="stat"><div class="v mono">' + fmt(s.views) + '</div><div class="l">views</div></div></div>' +
+          '<div class="site-side">' + clientHtml + '<span class="pill ' + st.cls + '"><span class="d"></span>' + st.label + '</span>' +
+            '<div class="row-actions">' +
+              '<button class="ic-btn" data-act="install" title="Install snippet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></button>' +
+              '<button class="ic-btn" data-act="edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function findSite(id) { for (var i = 0; i < state.sites.length; i++) if (state.sites[i].id === id) return state.sites[i]; return null; }
+
+  // ── Editor modal ────────────────────────────────────────────
+  function openEditor(site) {
+    state.editingId = site ? site.id : null;
+    $('#m-title').textContent = site ? 'Edit site' : 'New site';
+    $('#m-delete').hidden = !site;
+    $('#f-name').value = site ? (site.name || '') : '';
+    $('#f-url').value = site ? (site.url || '') : '';
+    $('#f-client').value = site ? (site.client_name || '') : '';
+    $('#f-contact').value = site ? (site.client_contact || '') : '';
+    $('#f-notes').value = site ? (site.notes || '') : '';
+    setFormStatus(site ? (site.status || 'building') : 'building');
+    $('#scrim').hidden = false;
+    setTimeout(function () { $('#f-name').focus(); }, 30);
+  }
+  function closeEditor() { $('#scrim').hidden = true; state.editingId = null; }
+  function setFormStatus(v) { state.formStatus = v; Array.prototype.forEach.call($('#f-status').children, function (b) { b.classList.toggle('on', b.getAttribute('data-on') === v); }); }
+  function collect() {
+    var url = $('#f-url').value.trim(); if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+    return { name: $('#f-name').value.trim() || 'Untitled site', url: url, status: state.formStatus, client_name: $('#f-client').value.trim(), client_contact: $('#f-contact').value.trim(), notes: $('#f-notes').value.trim() };
+  }
+  function save() {
+    var data = collect(); var btn = $('#m-save'); btn.disabled = true;
+    var req = state.editingId ? api('/sites?id=' + encodeURIComponent(state.editingId), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+                              : api('/sites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    req.then(function (r) { return r.json(); }).then(function () { closeEditor(); return load(true); })
+      .catch(function () { toast('Could not save — try again.'); })
+      .then(function () { btn.disabled = false; });
+  }
+  function del() {
+    if (!state.editingId) return;
+    if (!confirm('Delete this site and all its stats? This cannot be undone.')) return;
+    api('/sites?id=' + encodeURIComponent(state.editingId), { method: 'DELETE' }).then(function () { closeEditor(); return load(true); }).catch(function () { toast('Could not delete.'); });
+  }
+
+  // ── Install modal ───────────────────────────────────────────
+  function openInstall(site) {
+    var snippet = '<script defer src="' + location.origin + '/tracker.js" data-site="' + site.id + '"><\/script>';
+    $('#i-sitename').textContent = site.name || 'your site';
+    $('#i-snippet').textContent = snippet;
+    $('#i-copy').onclick = function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(snippet) : Promise.reject()).then(function () { toast('Snippet copied'); }).catch(function () {
+        var r = document.createRange(); r.selectNode($('#i-snippet')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try { document.execCommand('copy'); toast('Snippet copied'); } catch (e) { toast('Select and copy the line'); } sel.removeAllRanges();
+      });
+    };
+    $('#install-scrim').hidden = false;
+  }
+
+  // ── CSV export ──────────────────────────────────────────────
+  function exportCsv() {
+    var rows = [['Name', 'Address', 'Status', 'Visitors', 'Minutes', 'Views', 'Client', 'Contact', 'Notes']];
+    state.sites.forEach(function (s) { rows.push([s.name || '', s.url || '', (STATUS[s.status] || {}).label || s.status || '', s.visitors || 0, s.minutes || 0, s.views || 0, s.client_name || '', s.client_contact || '', (s.notes || '').replace(/\n/g, ' ')]); });
+    var csv = '﻿' + rows.map(function (r) { return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\r\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'websites.csv';
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  }
+
+  // ── Wire up ─────────────────────────────────────────────────
+  $('#add-btn').addEventListener('click', function () { openEditor(null); });
+  $('#export-btn').addEventListener('click', exportCsv);
+  $('#m-close').addEventListener('click', closeEditor);
+  $('#m-cancel').addEventListener('click', closeEditor);
+  $('#m-save').addEventListener('click', save);
+  $('#m-delete').addEventListener('click', del);
+  $('#i-close').addEventListener('click', function () { $('#install-scrim').hidden = true; });
+  $('#scrim').addEventListener('click', function (e) { if (e.target === this) closeEditor(); });
+  $('#install-scrim').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (!$('#scrim').hidden) closeEditor(); if (!$('#install-scrim').hidden) $('#install-scrim').hidden = true; } });
+  Array.prototype.forEach.call($('#f-status').children, function (b) { b.addEventListener('click', function () { setFormStatus(b.getAttribute('data-on')); }); });
+  $('#sites').addEventListener('click', function (e) {
+    var row = e.target.closest('.site[data-id]'); if (!row) return;
+    var s = findSite(row.getAttribute('data-id')); if (!s) return;
+    var actBtn = e.target.closest('[data-act]');
+    var act = actBtn ? actBtn.getAttribute('data-act') : 'edit';
+    if (act === 'install') openInstall(s); else openEditor(s);
+  });
+
+  // ── Boot ────────────────────────────────────────────────────
+  if (key) { showApp(); setSync('busy', 'Loading…'); load(false).then(function (ok) { if (ok) startPoll(); else { showLogin('Your key is no longer valid. Sign in again.'); } }); }
+  else { showLogin(''); }
+})();
+</script>
 </body>
 </html>

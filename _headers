@@ -1,0 +1,13 @@
+# Security + caching for Cloudflare Pages.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# The dashboard shell references no versioned bundles, so keep it fresh.
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# The tracking snippet is embedded on other sites — let it cache a little,
+# but not forever, so fixes roll out. It sets its own permissive CORS in JS.
+/tracker.js
+  Cache-Control: public, max-age=3600
