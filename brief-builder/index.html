@@ -193,7 +193,7 @@ const TIMELINES = ['ASAP','1–2 weeks','1 month','2–3 months','No rush'];
 
 async function init() {
   const params = new URLSearchParams(location.search);
-  state.token = params.get('token') || localStorage.getItem('bb_token');
+  state.token = params.get('token');
   if (state.token) {
     try {
       const r = await api('GET', `brief?token=${state.token}`);
@@ -203,9 +203,8 @@ async function init() {
         state.step = r.brief.step || 1;
         state.messages = r.messages || [];
         state.uploads = r.uploads || [];
-        localStorage.setItem('bb_token', state.token);
         if (r.brief.status !== 'draft') { renderStatus(); return; }
-      } else { state.token = null; localStorage.removeItem('bb_token'); }
+      } else { state.token = null; }
     } catch { state.token = null; }
   }
   render();
@@ -649,7 +648,6 @@ async function nextStep() {
       });
       if (!r.ok) { alert('Error creating brief. Please try again.'); return; }
       state.token = r.token;
-      localStorage.setItem('bb_token', r.token);
       history.replaceState(null, '', `?token=${r.token}`);
       renderBookmarkBanner();
     }
