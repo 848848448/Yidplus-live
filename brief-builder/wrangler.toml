@@ -5,7 +5,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "brief-builder-db"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+database_id = "d52206eb-5767-44e3-bd55-3dac8d42d1fd"
 
 # Optional: R2 bucket for file uploads
 # [[r2_buckets]]
