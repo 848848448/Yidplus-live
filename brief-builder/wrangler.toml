@@ -1,0 +1,20 @@
+name = "brief-builder"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "brief-builder-db"
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+
+# Optional: R2 bucket for file uploads
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "brief-uploads"
+
+# Secrets (set via: npx wrangler pages secret put SECRET_NAME)
+# DASH_KEY          - admin panel password
+# TELEGRAM_BOT_TOKEN - Telegram bot token for notifications
+# TELEGRAM_CHAT_ID   - Telegram chat ID for notifications
+# RESEND_API_KEY     - Resend.com API key for email notifications (optional)
+# NOTIFY_EMAIL       - email address to receive notifications (optional)

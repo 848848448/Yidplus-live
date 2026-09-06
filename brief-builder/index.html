@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Brief Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fb;--card:#fff;--border:#e2e5ea;--text:#1a1d23;--muted:#6b7280;
+  --primary:#2563eb;--primary-hover:#1d4ed8;--primary-light:#dbeafe;
+  --success:#059669;--success-bg:#d1fae5;--error:#dc2626;--error-bg:#fee2e2;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.08);
+  --step-done:#059669;--step-active:#2563eb;--step-pending:#d1d5db;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0f1117;--card:#1a1d27;--border:#2d3140;--text:#e5e7eb;--muted:#9ca3af;
+  --primary:#3b82f6;--primary-hover:#2563eb;--primary-light:#1e3a5f;
+  --success:#10b981;--success-bg:#064e3b;--error:#ef4444;--error-bg:#7f1d1d;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+}}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--primary)}
+
+/* Layout */
+.container{max-width:720px;margin:0 auto;padding:24px 16px}
+header{text-align:center;padding:32px 0 24px}
+header h1{font-size:1.75rem;font-weight:700;margin-bottom:4px}
+header p{color:var(--muted);font-size:.95rem}
+
+/* Progress */
+.progress{display:flex;gap:4px;margin-bottom:32px;padding:0 8px}
+.progress .dot{flex:1;height:6px;border-radius:3px;background:var(--step-pending);transition:background .3s}
+.progress .dot.done{background:var(--step-done)}
+.progress .dot.active{background:var(--step-active)}
+
+/* Step card */
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;box-shadow:var(--shadow);margin-bottom:24px;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step-card h2{font-size:1.25rem;font-weight:600;margin-bottom:4px}
+.step-card .subtitle{color:var(--muted);font-size:.9rem;margin-bottom:24px}
+
+/* Form elements */
+.field{margin-bottom:20px}
+.field label{display:block;font-weight:500;font-size:.9rem;margin-bottom:6px}
+.field .hint{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+input[type=text],input[type=email],input[type=tel],input[type=url],textarea,select{
+  width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font:inherit;font-size:.95rem;
+  background:var(--bg);color:var(--text);transition:border-color .2s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+textarea{resize:vertical;min-height:80px}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* Choice grid */
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px}
+.choice{border:2px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;text-align:center;font-weight:500;font-size:.9rem;transition:all .2s;user-select:none}
+.choice:hover{border-color:var(--primary);background:var(--primary-light)}
+.choice.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.choice .icon{font-size:1.5rem;margin-bottom:6px;display:block}
+
+/* Checkboxes */
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:16px}
+.check-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.9rem;transition:all .2s;user-select:none}
+.check-item:hover{border-color:var(--primary)}
+.check-item.checked{border-color:var(--primary);background:var(--primary-light)}
+.check-item input{display:none}
+.check-box{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.check-item.checked .check-box{background:var(--primary);border-color:var(--primary)}
+.check-item.checked .check-box::after{content:'';display:block;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+
+/* Buttons */
+.buttons{display:flex;gap:12px;justify-content:space-between;margin-top:28px}
+.btn{padding:12px 28px;border-radius:8px;font:inherit;font-weight:600;font-size:.95rem;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--text);color:var(--text)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{opacity:.9}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* File upload */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;color:var(--muted)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);background:var(--primary-light)}
+.upload-zone input{display:none}
+.file-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.file-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:8px;font-size:.85rem}
+.file-item .name{font-weight:500;word-break:break-all}
+.file-item .size{color:var(--muted);white-space:nowrap;margin-left:12px}
+.file-item .remove{color:var(--error);cursor:pointer;margin-left:8px;font-weight:600}
+
+/* Review section */
+.review-section{margin-bottom:20px;padding:16px 20px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+.review-section h3{font-size:.9rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.review-section .edit-btn{font-size:.8rem;color:var(--primary);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500}
+.review-section p{font-size:.9rem;margin-bottom:4px}
+.review-section .val{font-weight:500}
+
+/* Status page */
+.status-page{text-align:center;padding:48px 24px}
+.status-icon{font-size:3rem;margin-bottom:16px}
+.status-page h2{margin-bottom:8px}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;margin:32px 0;text-align:left;max-width:400px;margin-left:auto;margin-right:auto}
+.tl-step{display:flex;align-items:flex-start;gap:12px;position:relative;padding-bottom:24px}
+.tl-step:last-child{padding-bottom:0}
+.tl-step::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--border)}
+.tl-step:last-child::before{display:none}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem;font-weight:700;border:2px solid var(--step-pending);color:var(--step-pending);background:var(--card)}
+.tl-step.done .tl-dot{background:var(--step-done);border-color:var(--step-done);color:#fff}
+.tl-step.active .tl-dot{background:var(--step-active);border-color:var(--step-active);color:#fff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.3)}50%{box-shadow:0 0 0 8px rgba(37,99,235,0)}}
+.tl-info{padding-top:5px}
+.tl-info .label{font-weight:600;font-size:.9rem}
+.tl-info .desc{font-size:.8rem;color:var(--muted)}
+
+/* Chat */
+.chat-section{margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:600}
+.chat-messages{max-height:300px;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:.9rem;line-height:1.5}
+.chat-msg.client{background:var(--primary-light);align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg.owner{background:var(--bg);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg .meta{font-size:.75rem;color:var(--muted);margin-top:4px}
+.chat-input{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+.chat-input input{flex:1}
+.chat-input .btn{padding:10px 20px}
+
+/* Saving indicator */
+.saving{position:fixed;top:16px;right:16px;padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow);opacity:0;transition:opacity .3s;z-index:100}
+.saving.show{opacity:1}
+
+/* Responsive */
+@media(max-width:500px){
+  .choices{grid-template-columns:1fr 1fr}
+  .checks{grid-template-columns:1fr}
+  .step-card{padding:24px 20px}
+  .buttons{flex-direction:column-reverse}
+  .buttons .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="container">
+    <header>
+      <h1>Website Brief Builder</h1>
+      <p>Tell us about the website you need — step by step</p>
+    </header>
+    <div class="progress" id="progress"></div>
+    <div id="wizard"></div>
+  </div>
+</div>
+<div class="saving" id="saving">Saving...</div>
+
+<script>
+const API = '/api';
+const TOTAL_STEPS = 7;
+let state = { token: null, step: 1, data: {}, brief: null, uploads: [], messages: [] };
+
+const TYPES = [
+  { id: 'business', label: 'Business / Company', icon: '🏢' },
+  { id: 'ecommerce', label: 'Online Store', icon: '🛒' },
+  { id: 'portfolio', label: 'Portfolio / Showcase', icon: '🎨' },
+  { id: 'blog', label: 'Blog / Magazine', icon: '📝' },
+  { id: 'landing', label: 'Landing Page', icon: '🚀' },
+  { id: 'community', label: 'Community / Forum', icon: '💬' },
+  { id: 'other', label: 'Custom / Other', icon: '⚙️' },
+];
+
+const PAGES = ['Home','About','Services','Products','Contact','Blog','Gallery','FAQ','Testimonials','Team','Pricing','Careers'];
+const FEATURES = ['Contact form','Newsletter signup','Live chat','Social media links','Search','Multi-language','Members area','Appointment booking','Payment processing','Analytics'];
+const STYLES = [
+  { id: 'modern', label: 'Modern & Minimal', icon: '◻️' },
+  { id: 'bold', label: 'Bold & Colorful', icon: '🎯' },
+  { id: 'elegant', label: 'Classic & Elegant', icon: '✨' },
+  { id: 'playful', label: 'Playful & Fun', icon: '🎪' },
+  { id: 'corporate', label: 'Corporate & Professional', icon: '💼' },
+];
+const BUDGETS = ['Under $500','$500 – $1,000','$1,000 – $2,500','$2,500 – $5,000','$5,000+','Not sure yet'];
+const TIMELINES = ['ASAP','1–2 weeks','1 month','2–3 months','No rush'];
+
+// --- Init ---
+async function init() {
+  const params = new URLSearchParams(location.search);
+  state.token = params.get('token') || localStorage.getItem('bb_token');
+  if (state.token) {
+    try {
+      const r = await api('GET', `brief?token=${state.token}`);
+      if (r.ok) {
+        state.brief = r.brief;
+        state.data = r.brief.data || {};
+        state.step = r.brief.step || 1;
+        state.messages = r.messages || [];
+        state.uploads = r.uploads || [];
+        localStorage.setItem('bb_token', state.token);
+        if (r.brief.status !== 'draft') { renderStatus(); return; }
+      } else { state.token = null; }
+    } catch { state.token = null; }
+  }
+  render();
+}
+
+// --- API ---
+async function api(method, path, body) {
+  const opts = { method, headers: {} };
+  if (body instanceof FormData) { opts.body = body; }
+  else if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const r = await fetch(`${API}/${path}`, opts);
+  return r.json();
+}
+
+let saveTimer;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => save(), 800);
+}
+
+async function save() {
+  if (!state.token) return;
+  const el = document.getElementById('saving');
+  el.classList.add('show');
+  collectCurrentStep();
+  await api('PUT', `brief?token=${state.token}`, {
+    step: state.step,
+    data: state.data,
+    client_name: state.data.client_name || '',
+    client_email: state.data.client_email || '',
+    client_phone: state.data.client_phone || '',
+    business_name: state.data.business_name || '',
+    website_type: state.data.website_type || '',
+  });
+  setTimeout(() => el.classList.remove('show'), 1000);
+}
+
+function collectCurrentStep() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const key = el.dataset.field;
+    if (el.type === 'checkbox') return;
+    state.data[key] = el.value;
+  });
+}
+
+// --- Render ---
+function render() {
+  renderProgress();
+  const w = document.getElementById('wizard');
+  const s = state.step;
+  if (s === 1) renderStep1(w);
+  else if (s === 2) renderStep2(w);
+  else if (s === 3) renderStep3(w);
+  else if (s === 4) renderStep4(w);
+  else if (s === 5) renderStep5(w);
+  else if (s === 6) renderStep6(w);
+  else if (s === 7) renderStep7(w);
+  w.querySelectorAll('input,textarea,select').forEach(el => el.addEventListener('input', autoSave));
+}
+
+function renderProgress() {
+  const p = document.getElementById('progress');
+  p.innerHTML = '';
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < state.step ? ' done' : i === state.step ? ' active' : '');
+    p.appendChild(d);
+  }
+}
+
+function val(key, def = '') { return state.data[key] ?? def; }
+
+function field(key, label, type = 'text', hint = '') {
+  const tag = type === 'textarea' ? 'textarea' : 'input';
+  const extra = type === 'textarea' ? '' : ` type="${type}"`;
+  return `<div class="field"><label>${label}</label>${hint ? `<div class="hint">${hint}</div>` : ''}
+    <${tag} data-field="${key}"${extra} value="${esc(val(key))}" placeholder=" "></${tag}></div>`;
+}
+
+function choiceGrid(key, items) {
+  const cur = val(key);
+  return `<div class="choices">${items.map(i =>
+    `<div class="choice${cur === i.id ? ' selected' : ''}" data-choice="${key}" data-val="${i.id}">
+      <span class="icon">${i.icon}</span>${i.label}</div>`
+  ).join('')}</div>`;
+}
+
+function checkGrid(key, items) {
+  const cur = val(key, []);
+  const arr = Array.isArray(cur) ? cur : [];
+  return `<div class="checks">${items.map(i =>
+    `<label class="check-item${arr.includes(i) ? ' checked' : ''}">
+      <input type="checkbox" data-check="${key}" value="${esc(i)}" ${arr.includes(i) ? 'checked' : ''}>
+      <span class="check-box"></span>${i}</label>`
+  ).join('')}</div>`;
+}
+
+function buttons(showBack = true) {
+  const isLast = state.step === TOTAL_STEPS;
+  return `<div class="buttons">
+    ${showBack ? '<button class="btn btn-secondary" onclick="prevStep()">Back</button>' : '<div></div>'}
+    <button class="btn ${isLast ? 'btn-success' : 'btn-primary'}" onclick="${isLast ? 'submitBrief()' : 'nextStep()'}">${isLast ? 'Submit Brief' : 'Continue'}</button>
+  </div>`;
+}
+
+function esc(s) { return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function escH(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// --- Steps ---
+function renderStep1(w) {
+  w.innerHTML = `<div class="step-card"><h2>About You</h2><p class="subtitle">Let's start with your contact information</p>
+    ${field('client_name', 'Your Name *')}
+    ${field('client_email', 'Email Address *', 'email')}
+    ${field('client_phone', 'Phone Number', 'tel', 'Optional')}
+    ${field('business_name', 'Business / Organization Name')}
+    ${buttons(false)}
+  </div>`;
+}
+
+function renderStep2(w) {
+  w.innerHTML = `<div class="step-card"><h2>Type of Website</h2><p class="subtitle">What kind of website do you need?</p>
+    ${choiceGrid('website_type', TYPES)}
+    ${field('website_desc', 'Describe what your website should do', 'textarea', 'Tell us in your own words')}
+    ${buttons()}
+  </div>`;
+  bindChoices();
+}
+
+function renderStep3(w) {
+  const type = val('website_type', 'business');
+  let qs = '';
+  if (type === 'business') {
+    qs = field('biz_services', 'What services or products do you offer?', 'textarea')
+      + field('biz_locations', 'How many locations do you have?')
+      + checkGrid('biz_features', ['Contact form','Appointment booking','Team/staff page','Testimonials','Service areas map','Client portal'])
+      + field('biz_extra', 'Anything else about your business site?', 'textarea');
+  } else if (type === 'ecommerce') {
+    qs = field('shop_products', 'What products will you sell?', 'textarea')
+      + field('shop_count', 'Approximate number of products')
+      + checkGrid('shop_features', ['Payment processing','Inventory management','Shipping calculator','Discount codes','Product reviews','Wishlist','Size/variant picker'])
+      + field('shop_extra', 'Anything else about your store?', 'textarea');
+  } else if (type === 'portfolio') {
+    qs = field('port_type', 'What type of work?', 'text', 'e.g., Photography, Design, Architecture, Art')
+      + field('port_count', 'Approximate number of portfolio items')
+      + checkGrid('port_features', ['Image gallery','Slideshow','Video support','Categorization','Client testimonials','Project details pages'])
+      + field('port_extra', 'Anything else about your portfolio?', 'textarea');
+  } else if (type === 'blog') {
+    qs = field('blog_topics', 'Topics / categories you\'ll cover', 'textarea')
+      + field('blog_frequency', 'How often will you publish?')
+      + checkGrid('blog_features', ['Multiple authors','Categories & tags','Search','Newsletter','Comments','Social sharing','RSS feed'])
+      + field('blog_extra', 'Anything else about your blog?', 'textarea');
+  } else if (type === 'landing') {
+    qs = field('land_goal', 'Main goal of the page', 'text', 'e.g., Sign-ups, Sales, App downloads')
+      + checkGrid('land_features', ['Email capture form','Video hero','Countdown timer','Pricing table','Testimonials','FAQ section'])
+      + field('land_extra', 'Anything else about your landing page?', 'textarea');
+  } else if (type === 'community') {
+    qs = field('comm_purpose', 'What is the community about?', 'textarea')
+      + checkGrid('comm_features', ['User registration','Discussion forums','Private messaging','User profiles','Content moderation','Events calendar','Groups/channels'])
+      + field('comm_extra', 'Anything else about your community?', 'textarea');
+  } else {
+    qs = field('custom_desc', 'Describe the website you need in detail', 'textarea')
+      + field('custom_examples', 'Any websites similar to what you want?', 'textarea', 'Paste URLs or describe them')
+      + field('custom_extra', 'Additional requirements', 'textarea');
+  }
+  w.innerHTML = `<div class="step-card"><h2>Details for Your ${TYPES.find(t=>t.id===type)?.label || 'Website'}</h2>
+    <p class="subtitle">Help us understand your specific needs</p>${qs}${buttons()}</div>`;
+  bindChecks();
+}
+
+function renderStep4(w) {
+  w.innerHTML = `<div class="step-card"><h2>Pages & Features</h2><p class="subtitle">What should your website include?</p>
+    <div class="field"><label>Which pages do you need?</label></div>
+    ${checkGrid('pages', PAGES)}
+    <div class="field"><label>Special features</label></div>
+    ${checkGrid('features', FEATURES)}
+    ${field('pages_extra', 'Any other pages or features you need?', 'textarea')}
+    ${buttons()}
+  </div>`;
+  bindChecks();
+}
+
+function renderStep5(w) {
+  w.innerHTML = `<div class="step-card"><h2>Design Preferences</h2><p class="subtitle">What should it look and feel like?</p>
+    <div class="field"><label>Style preference</label></div>
+    ${choiceGrid('style', STYLES)}
+    ${field('colors', 'Color preferences', 'text', 'e.g., "Blue and white", "Earthy tones", "Match our logo"')}
+    ${field('liked_sites', 'Websites you like (for inspiration)', 'textarea', 'Paste URLs and say what you like about each')}
+    ${field('has_logo', 'Do you have a logo?', 'text', 'Yes / No / Need one designed')}
+    ${field('has_brand', 'Do you have brand guidelines?', 'text', 'Colors, fonts, style guide — Yes or No')}
+    ${field('design_extra', 'Anything else about the design?', 'textarea')}
+    ${buttons()}
+  </div>`;
+  bindChoices();
+}
+
+function renderStep6(w) {
+  const fileListHtml = state.uploads.map(f =>
+    `<div class="file-item"><span class="name">${escH(f.filename)}</span><span class="size">${fmtSize(f.size)}</span></div>`
+  ).join('');
+
+  w.innerHTML = `<div class="step-card"><h2>Content & Files</h2><p class="subtitle">Tell us about your content and upload any materials</p>
+    <div class="field"><label>Do you have your content ready?</label>
+      <select data-field="content_ready">
+        <option value="">Select...</option>
+        <option value="yes"${val('content_ready')==='yes'?' selected':''}>Yes, it's ready</option>
+        <option value="partial"${val('content_ready')==='partial'?' selected':''}>Partially ready</option>
+        <option value="no"${val('content_ready')==='no'?' selected':''}>No, I need help with content</option>
+      </select>
+    </div>
+    <div class="field"><label>Do you have photos / images?</label>
+      <select data-field="has_images">
+        <option value="">Select...</option>
+        <option value="yes"${val('has_images')==='yes'?' selected':''}>Yes, I have photos</option>
+        <option value="some"${val('has_images')==='some'?' selected':''}>Some, but need more</option>
+        <option value="no"${val('has_images')==='no'?' selected':''}>No, I need stock photos</option>
+      </select>
+    </div>
+    ${field('content_extra', 'Anything else about your content?', 'textarea')}
+    <div class="field"><label>Upload files</label>
+      <div class="hint">Logos, content docs, inspiration images (max 10 MB each)</div>
+      <div class="upload-zone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div>Click to upload or drag & drop</div>
+        <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.txt,.csv,.zip">
+      </div>
+      <div class="file-list" id="fileList">${fileListHtml}</div>
+    </div>
+    ${buttons()}
+  </div>`;
+  bindUpload();
+}
+
+function renderStep7(w) {
+  const d = state.data;
+  const type = TYPES.find(t => t.id === d.website_type)?.label || d.website_type || '—';
+  const style = STYLES.find(s => s.id === d.style)?.label || d.style || '—';
+  const pages = Array.isArray(d.pages) ? d.pages.join(', ') : '—';
+  const features = Array.isArray(d.features) ? d.features.join(', ') : '—';
+
+  w.innerHTML = `<div class="step-card"><h2>Review Your Brief</h2><p class="subtitle">Make sure everything looks right before submitting</p>
+
+    <div class="review-section">
+      <h3>Contact Info <span class="edit-btn" onclick="goStep(1)">Edit</span></h3>
+      <p><strong>Name:</strong> <span class="val">${escH(d.client_name)}</span></p>
+      <p><strong>Email:</strong> <span class="val">${escH(d.client_email)}</span></p>
+      ${d.client_phone ? `<p><strong>Phone:</strong> <span class="val">${escH(d.client_phone)}</span></p>` : ''}
+      ${d.business_name ? `<p><strong>Business:</strong> <span class="val">${escH(d.business_name)}</span></p>` : ''}
+    </div>
+
+    <div class="review-section">
+      <h3>Website Type <span class="edit-btn" onclick="goStep(2)">Edit</span></h3>
+      <p><span class="val">${escH(type)}</span></p>
+      ${d.website_desc ? `<p>${escH(d.website_desc)}</p>` : ''}
+    </div>
+
+    <div class="review-section">
+      <h3>Pages & Features <span class="edit-btn" onclick="goStep(4)">Edit</span></h3>
+      <p><strong>Pages:</strong> ${escH(pages)}</p>
+      <p><strong>Features:</strong> ${escH(features)}</p>
+    </div>
+
+    <div class="review-section">
+      <h3>Design <span class="edit-btn" onclick="goStep(5)">Edit</span></h3>
+      <p><strong>Style:</strong> <span class="val">${escH(style)}</span></p>
+      ${d.colors ? `<p><strong>Colors:</strong> ${escH(d.colors)}</p>` : ''}
+    </div>
+
+    <div class="review-section">
+      <h3>Content <span class="edit-btn" onclick="goStep(6)">Edit</span></h3>
+      <p><strong>Content ready:</strong> ${escH(d.content_ready || '—')}</p>
+      <p><strong>Images:</strong> ${escH(d.has_images || '—')}</p>
+      ${state.uploads.length ? `<p><strong>Files:</strong> ${state.uploads.length} uploaded</p>` : ''}
+    </div>
+
+    ${field('budget', 'Budget range')}
+    ${field('timeline', 'Timeline')}
+    ${field('final_notes', 'Anything else we should know?', 'textarea')}
+
+    ${buttons()}
+  </div>`;
+
+  const budgetField = w.querySelector('[data-field="budget"]');
+  const timelineField = w.querySelector('[data-field="timeline"]');
+  if (budgetField) {
+    const sel = document.createElement('select');
+    sel.dataset.field = 'budget';
+    sel.innerHTML = '<option value="">Select budget range...</option>' + BUDGETS.map(b => `<option value="${b}"${val('budget')===b?' selected':''}>${b}</option>`).join('');
+    budgetField.replaceWith(sel);
+    const f = document.createElement('div');
+    f.className = 'field';
+    f.innerHTML = '<label>Budget range</label>';
+    f.appendChild(sel);
+    w.querySelector('[data-field="budget"]').closest('.field')?.replaceWith(f) || w.querySelectorAll('.review-section')[4].after(f);
+  }
+  if (timelineField) {
+    const sel = document.createElement('select');
+    sel.dataset.field = 'timeline';
+    sel.innerHTML = '<option value="">Select timeline...</option>' + TIMELINES.map(t => `<option value="${t}"${val('timeline')===t?' selected':''}>${t}</option>`).join('');
+    timelineField.replaceWith(sel);
+    const f = document.createElement('div');
+    f.className = 'field';
+    f.innerHTML = '<label>Timeline</label>';
+    f.appendChild(sel);
+  }
+}
+
+// --- Status page (after submission) ---
+function renderStatus() {
+  const b = state.brief;
+  if (!b) return;
+  const STATUS_MAP = {
+    submitted: { label: 'Received', idx: 1 },
+    reviewing: { label: 'Reviewing', idx: 2 },
+    building: { label: 'Building', idx: 3 },
+    client_review: { label: 'Your Review', idx: 4 },
+    ready: { label: 'Ready', idx: 5 },
+  };
+  const cur = STATUS_MAP[b.status] || STATUS_MAP.submitted;
+  const steps = [
+    { label: 'Received', desc: 'We got your brief' },
+    { label: 'Reviewing', desc: 'Going through your requirements' },
+    { label: 'Building', desc: 'Working on your website' },
+    { label: 'Your Review', desc: 'Check the progress' },
+    { label: 'Ready', desc: 'Your website is complete' },
+  ];
+
+  const w = document.getElementById('wizard');
+  document.getElementById('progress').innerHTML = '';
+  w.innerHTML = `<div class="status-page">
+    <div class="status-icon">${b.status === 'ready' ? '🎉' : '📋'}</div>
+    <h2>${b.status === 'ready' ? 'Your Website is Ready!' : 'Brief Submitted Successfully'}</h2>
+    <p style="color:var(--muted);margin-bottom:8px">Thank you, ${escH(b.client_name || 'there')}! We'll be in touch soon.</p>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:32px">Save this page's URL to check your status anytime.</p>
+
+    <div class="timeline">${steps.map((s, i) => {
+      const n = i + 1;
+      const cls = n < cur.idx ? 'done' : n === cur.idx ? 'active' : '';
+      return `<div class="tl-step ${cls}">
+        <div class="tl-dot">${n < cur.idx ? '✓' : n}</div>
+        <div class="tl-info"><div class="label">${s.label}</div><div class="desc">${s.desc}</div></div>
+      </div>`;
+    }).join('')}</div>
+
+    <div class="chat-section">
+      <div class="chat-header">Messages</div>
+      <div class="chat-messages" id="chatMessages">
+        ${state.messages.length === 0 ? '<p style="color:var(--muted);text-align:center;padding:24px;font-size:.9rem">No messages yet</p>' :
+          state.messages.map(m => `<div class="chat-msg ${m.sender}"><div>${escH(m.text)}</div><div class="meta">${m.sender === 'owner' ? 'Team' : 'You'} · ${fmtDate(m.created_at)}</div></div>`).join('')}
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>`;
+  const mc = document.getElementById('chatMessages');
+  if (mc) mc.scrollTop = mc.scrollHeight;
+}
+
+// --- Navigation ---
+async function nextStep() {
+  collectCurrentStep();
+  if (state.step === 1) {
+    if (!state.data.client_name?.trim() || !state.data.client_email?.trim()) {
+      alert('Please enter your name and email address.'); return;
+    }
+    if (!state.token) {
+      const r = await api('POST', 'brief', {
+        client_name: state.data.client_name,
+        client_email: state.data.client_email,
+        client_phone: state.data.client_phone || '',
+        business_name: state.data.business_name || '',
+      });
+      if (!r.ok) { alert('Error creating brief. Please try again.'); return; }
+      state.token = r.token;
+      localStorage.setItem('bb_token', r.token);
+      history.replaceState(null, '', `?token=${r.token}`);
+    }
+  }
+  if (state.step === 2 && !state.data.website_type) {
+    alert('Please select a website type.'); return;
+  }
+  state.step = Math.min(state.step + 1, TOTAL_STEPS);
+  await save();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+  collectCurrentStep();
+  state.step = Math.max(state.step - 1, 1);
+  save();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goStep(n) {
+  collectCurrentStep();
+  state.step = n;
+  save();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function submitBrief() {
+  collectCurrentStep();
+  await save();
+  if (!confirm('Ready to submit your brief? You can still message us afterward.')) return;
+  const r = await api('POST', `brief?token=${state.token}&submit=1`);
+  if (!r.ok) { alert(r.error || 'Error submitting. Please try again.'); return; }
+  const br = await api('GET', `brief?token=${state.token}`);
+  if (br.ok) { state.brief = br.brief; state.messages = br.messages || []; state.uploads = br.uploads || []; }
+  renderStatus();
+}
+
+// --- Chat ---
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const r = await api('POST', `chat?token=${state.token}`, { text });
+  if (r.ok) {
+    state.messages.push({ id: r.id, sender: 'client', text, created_at: Date.now() });
+    renderStatus();
+  }
+}
+
+// --- Bindings ---
+function bindChoices() {
+  document.querySelectorAll('[data-choice]').forEach(el => {
+    el.addEventListener('click', () => {
+      const key = el.dataset.choice;
+      state.data[key] = el.dataset.val;
+      el.parentElement.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      autoSave();
+    });
+  });
+}
+
+function bindChecks() {
+  document.querySelectorAll('[data-check]').forEach(el => {
+    const item = el.closest('.check-item');
+    item.addEventListener('click', (e) => {
+      if (e.target === el) return;
+      el.checked = !el.checked;
+      item.classList.toggle('checked', el.checked);
+      updateCheckData(el.dataset.check);
+      autoSave();
+    });
+    el.addEventListener('change', () => {
+      item.classList.toggle('checked', el.checked);
+      updateCheckData(el.dataset.check);
+      autoSave();
+    });
+  });
+}
+
+function updateCheckData(key) {
+  const checked = [];
+  document.querySelectorAll(`[data-check="${key}"]:checked`).forEach(el => checked.push(el.value));
+  state.data[key] = checked;
+}
+
+function bindUpload() {
+  const zone = document.getElementById('dropzone');
+  const input = document.getElementById('fileInput');
+  if (!zone || !input) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); uploadFiles(e.dataTransfer.files); });
+  input.addEventListener('change', () => { uploadFiles(input.files); input.value = ''; });
+}
+
+async function uploadFiles(files) {
+  for (const file of files) {
+    const fd = new FormData();
+    fd.append('file', file);
+    const r = await api('POST', `upload?token=${state.token}`, fd);
+    if (r.ok) {
+      state.uploads.push({ id: r.id, filename: r.filename, size: r.size });
+      const list = document.getElementById('fileList');
+      if (list) list.innerHTML += `<div class="file-item"><span class="name">${escH(r.filename)}</span><span class="size">${fmtSize(r.size)}</span></div>`;
+    } else {
+      alert(r.error || 'Upload failed');
+    }
+  }
+}
+
+// --- Helpers ---
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+init();
+</script>
+</body>
+</html>
