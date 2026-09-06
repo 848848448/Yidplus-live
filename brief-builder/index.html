@@ -345,7 +345,7 @@ function renderStep1(w) {
 function renderStep2(w) {
   w.innerHTML = `<div class="step-card"><h2>Type of Website</h2><p class="subtitle">What kind of website do you need?</p>
     ${choiceGrid('website_type', TYPES)}
-    ${field('website_desc', 'Describe what your website should do', 'textarea', 'Tell us in your own words')}
+    ${field('website_desc', 'Describe what your website should do *', 'textarea', 'Be specific — what is the main purpose? What should visitors be able to do on your site?')}
     ${buttons()}
   </div>`;
   bindChoices();
@@ -355,50 +355,68 @@ function renderStep3(w) {
   const type = val('website_type', 'business');
   let qs = '';
   if (type === 'business') {
-    qs = field('biz_services', 'What services or products do you offer?', 'textarea')
+    qs = field('biz_services', 'What services or products do you offer? *', 'textarea', 'List all services/products you want displayed on the site')
+      + field('biz_target', 'Who is your target audience? *', 'textarea', 'Describe your ideal customer/client')
       + field('biz_locations', 'How many locations do you have?')
-      + checkGrid('biz_features', ['Contact form','Appointment booking','Team/staff page','Testimonials','Service areas map','Client portal'])
-      + field('biz_extra', 'Anything else about your business site?', 'textarea');
+      + `<div class="field"><label>Which features do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('biz_features', ['Contact form','Appointment booking','Team/staff page','Testimonials','Service areas map','Client portal','Online payments','Quote/estimate request'])
+      + field('biz_goals', 'What is the main goal of your website? *', 'textarea', 'e.g., Get more customers, showcase services, allow online booking, sell products')
+      + field('biz_extra', 'Anything else we should know?', 'textarea');
   } else if (type === 'ecommerce') {
-    qs = field('shop_products', 'What products will you sell?', 'textarea')
-      + field('shop_count', 'Approximate number of products')
-      + checkGrid('shop_features', ['Payment processing','Inventory management','Shipping calculator','Discount codes','Product reviews','Wishlist','Size/variant picker'])
+    qs = field('shop_products', 'What products will you sell? *', 'textarea', 'Describe your product categories and types')
+      + field('shop_count', 'Approximate number of products *')
+      + field('shop_target', 'Who is your target customer? *', 'textarea', 'Describe who will be buying from you')
+      + `<div class="field"><label>Which store features do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('shop_features', ['Payment processing','Inventory management','Shipping calculator','Discount codes','Product reviews','Wishlist','Size/variant picker','Order tracking','Gift cards','Subscription products'])
+      + field('shop_goals', 'What makes your store unique? What is the main goal? *', 'textarea')
       + field('shop_extra', 'Anything else about your store?', 'textarea');
   } else if (type === 'portfolio') {
-    qs = field('port_type', 'What type of work?', 'text', 'e.g., Photography, Design, Architecture, Art')
-      + field('port_count', 'Approximate number of portfolio items')
-      + checkGrid('port_features', ['Image gallery','Slideshow','Video support','Categorization','Client testimonials','Project details pages'])
+    qs = field('port_type', 'What type of work will you showcase? *', 'text', 'e.g., Photography, Design, Architecture, Art')
+      + field('port_count', 'Approximate number of portfolio items *')
+      + field('port_target', 'Who do you want to attract with your portfolio? *', 'textarea', 'e.g., Potential clients, employers, galleries')
+      + `<div class="field"><label>Which features do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('port_features', ['Image gallery','Slideshow','Video support','Categorization','Client testimonials','Project details pages','Download/print options','Before & after'])
       + field('port_extra', 'Anything else about your portfolio?', 'textarea');
   } else if (type === 'blog') {
-    qs = field('blog_topics', 'Topics / categories you\'ll cover', 'textarea')
-      + field('blog_frequency', 'How often will you publish?')
-      + checkGrid('blog_features', ['Multiple authors','Categories & tags','Search','Newsletter','Comments','Social sharing','RSS feed'])
+    qs = field('blog_topics', 'Topics / categories you\'ll cover *', 'textarea', 'List the main topics and categories')
+      + field('blog_frequency', 'How often will you publish? *')
+      + field('blog_target', 'Who is your target audience? *', 'textarea')
+      + `<div class="field"><label>Which features do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('blog_features', ['Multiple authors','Categories & tags','Search','Newsletter','Comments','Social sharing','RSS feed','Related posts','Reading time'])
       + field('blog_extra', 'Anything else about your blog?', 'textarea');
   } else if (type === 'landing') {
-    qs = field('land_goal', 'Main goal of the page', 'text', 'e.g., Sign-ups, Sales, App downloads')
-      + checkGrid('land_features', ['Email capture form','Video hero','Countdown timer','Pricing table','Testimonials','FAQ section'])
+    qs = field('land_goal', 'Main goal of the page *', 'text', 'e.g., Sign-ups, Sales, App downloads')
+      + field('land_target', 'Who is the landing page for? *', 'textarea', 'Describe the audience you want to reach')
+      + field('land_offer', 'What is the offer / call to action? *', 'textarea', 'What should visitors do when they land on the page?')
+      + `<div class="field"><label>Which elements do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('land_features', ['Email capture form','Video hero','Countdown timer','Pricing table','Testimonials','FAQ section','Social proof','Guarantee badge'])
       + field('land_extra', 'Anything else about your landing page?', 'textarea');
   } else if (type === 'community') {
-    qs = field('comm_purpose', 'What is the community about?', 'textarea')
-      + checkGrid('comm_features', ['User registration','Discussion forums','Private messaging','User profiles','Content moderation','Events calendar','Groups/channels'])
+    qs = field('comm_purpose', 'What is the community about? *', 'textarea', 'Describe the topic and purpose of the community')
+      + field('comm_target', 'Who will be joining? *', 'textarea', 'Describe your target members')
+      + `<div class="field"><label>Which features do you need? *</label><div class="hint">Select all that apply</div></div>`
+      + checkGrid('comm_features', ['User registration','Discussion forums','Private messaging','User profiles','Content moderation','Events calendar','Groups/channels','File sharing','Polls/voting'])
       + field('comm_extra', 'Anything else about your community?', 'textarea');
   } else {
-    qs = field('custom_desc', 'Describe the website you need in detail', 'textarea')
+    qs = field('custom_desc', 'Describe the website you need in detail *', 'textarea', 'Be very specific — what should the website do? What features are essential?')
+      + field('custom_target', 'Who is the website for? *', 'textarea', 'Describe your target audience')
       + field('custom_examples', 'Any websites similar to what you want?', 'textarea', 'Paste URLs or describe them')
+      + field('custom_goals', 'What is the main goal of the website? *', 'textarea')
       + field('custom_extra', 'Additional requirements', 'textarea');
   }
   w.innerHTML = `<div class="step-card"><h2>Details for Your ${TYPES.find(t=>t.id===type)?.label || 'Website'}</h2>
-    <p class="subtitle">Help us understand your specific needs</p>${qs}${buttons()}</div>`;
+    <p class="subtitle">Please fill in all required (*) fields so we can understand exactly what you need</p>${qs}${buttons()}</div>`;
   bindChecks();
 }
 
 function renderStep4(w) {
-  w.innerHTML = `<div class="step-card"><h2>Pages & Features</h2><p class="subtitle">What should your website include?</p>
-    <div class="field"><label>Which pages do you need?</label></div>
+  w.innerHTML = `<div class="step-card"><h2>Pages & Features</h2><p class="subtitle">Select everything your website needs and describe any special requirements</p>
+    <div class="field"><label>Which pages do you need? *</label><div class="hint">Select all that apply</div></div>
     ${checkGrid('pages', PAGES)}
-    <div class="field"><label>Special features</label></div>
+    <div class="field"><label>Special features *</label><div class="hint">Select all features you want on your website</div></div>
     ${checkGrid('features', FEATURES)}
-    ${field('pages_extra', 'Any other pages or features you need?', 'textarea')}
+    ${field('features_detail', 'Describe exactly how these features should work *', 'textarea', 'For each feature you selected, explain what it should do. e.g., "Contact form should ask for name, email, phone, and message" or "Booking should show available time slots"')}
+    ${field('pages_extra', 'Any other pages or features not listed above?', 'textarea', 'List anything else you need that wasn\'t in the options above')}
     ${buttons()}
   </div>`;
   bindChecks();
@@ -476,19 +494,26 @@ function renderStep7(w) {
     <div class="review-section">
       <h3>Website <span class="edit-btn" onclick="goStep(2)">Edit</span></h3>
       <p><strong>Type:</strong> <span class="val">${escH(type)}</span></p>
-      ${d.website_desc ? `<p>${escH(d.website_desc)}</p>` : ''}
+      ${d.website_desc ? `<p><strong>Description:</strong> ${escH(d.website_desc)}</p>` : ''}
+    </div>
+
+    <div class="review-section">
+      <h3>Specific Details <span class="edit-btn" onclick="goStep(3)">Edit</span></h3>
+      ${reviewStep3Details(d)}
     </div>
 
     <div class="review-section">
       <h3>Pages & Features <span class="edit-btn" onclick="goStep(4)">Edit</span></h3>
       <p><strong>Pages:</strong> ${escH(pages)}</p>
       <p><strong>Features:</strong> ${escH(features)}</p>
+      ${d.features_detail ? `<p><strong>How features should work:</strong> ${escH(d.features_detail)}</p>` : ''}
     </div>
 
     <div class="review-section">
       <h3>Design <span class="edit-btn" onclick="goStep(5)">Edit</span></h3>
       <p><strong>Style:</strong> <span class="val">${escH(style)}</span></p>
       ${d.colors ? `<p><strong>Colors:</strong> ${escH(d.colors)}</p>` : ''}
+      ${d.liked_sites ? `<p><strong>Inspiration:</strong> ${escH(d.liked_sites)}</p>` : ''}
     </div>
 
     <div class="review-section">
@@ -498,13 +523,13 @@ function renderStep7(w) {
       ${state.uploads.length ? `<p><strong>Files:</strong> ${state.uploads.length} uploaded</p>` : ''}
     </div>
 
-    <div class="field"><label>Budget range</label>
+    <div class="field"><label>Budget range *</label>
       <select data-field="budget">
         <option value="">Select budget range...</option>
         ${BUDGETS.map(b => `<option value="${b}"${val('budget')===b?' selected':''}>${b}</option>`).join('')}
       </select>
     </div>
-    <div class="field"><label>Timeline</label>
+    <div class="field"><label>Timeline *</label>
       <select data-field="timeline">
         <option value="">Select timeline...</option>
         ${TIMELINES.map(t => `<option value="${t}"${val('timeline')===t?' selected':''}>${t}</option>`).join('')}
@@ -514,6 +539,20 @@ function renderStep7(w) {
 
     ${buttons()}
   </div>`;
+}
+
+function reviewStep3Details(d) {
+  const type = d.website_type || 'other';
+  const fields = {
+    business: [['biz_services','Services/Products'],['biz_target','Target Audience'],['biz_goals','Main Goal'],['biz_locations','Locations']],
+    ecommerce: [['shop_products','Products'],['shop_count','Product Count'],['shop_target','Target Customer'],['shop_goals','Unique Value']],
+    portfolio: [['port_type','Work Type'],['port_count','Item Count'],['port_target','Target Audience']],
+    blog: [['blog_topics','Topics'],['blog_frequency','Frequency'],['blog_target','Target Audience']],
+    landing: [['land_goal','Goal'],['land_target','Target Audience'],['land_offer','Offer/CTA']],
+    community: [['comm_purpose','Purpose'],['comm_target','Target Members']],
+    other: [['custom_desc','Description'],['custom_target','Target Audience'],['custom_goals','Main Goal'],['custom_examples','Similar Sites']],
+  };
+  return (fields[type] || fields.other).filter(([k]) => d[k]).map(([k, label]) => `<p><strong>${label}:</strong> ${escH(d[k])}</p>`).join('');
 }
 
 function renderStatus() {
@@ -633,11 +672,32 @@ function showRecoverMsg(msg, ok) {
   if (el) el.innerHTML = `<div class="recover-msg ${ok ? 'ok' : 'err'}">${escH(msg)}</div>`;
 }
 
+function showStepError(msg) {
+  let el = document.getElementById('stepError');
+  if (!el) {
+    const card = document.querySelector('.step-card');
+    if (!card) return alert(msg);
+    card.insertAdjacentHTML('afterbegin', '<div id="stepError" style="background:var(--error-bg);color:var(--error);padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.9rem;font-weight:500"></div>');
+    el = document.getElementById('stepError');
+  }
+  el.textContent = msg;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearStepError() {
+  const el = document.getElementById('stepError');
+  if (el) el.remove();
+}
+
+function hasVal(key) { const v = state.data[key]; return typeof v === 'string' ? v.trim().length > 0 : Array.isArray(v) ? v.length > 0 : !!v; }
+
 async function nextStep() {
   collectCurrentStep();
+  clearStepError();
+
   if (state.step === 1) {
     if (!state.data.client_name?.trim() || !state.data.client_email?.trim()) {
-      alert('Please enter your name and email address.'); return;
+      showStepError('Please enter your name and email address.'); return;
     }
     if (!state.token) {
       const r = await api('POST', 'brief', {
@@ -646,15 +706,45 @@ async function nextStep() {
         client_phone: state.data.client_phone || '',
         business_name: state.data.business_name || '',
       });
-      if (!r.ok) { alert('Error creating brief. Please try again.'); return; }
+      if (!r.ok) { showStepError('Error creating brief. Please try again.'); return; }
       state.token = r.token;
       history.replaceState(null, '', `?token=${r.token}`);
       renderBookmarkBanner();
     }
   }
-  if (state.step === 2 && !state.data.website_type) {
-    alert('Please select a website type.'); return;
+
+  if (state.step === 2) {
+    if (!state.data.website_type) { showStepError('Please select a website type.'); return; }
+    if (!hasVal('website_desc')) { showStepError('Please describe what your website should do.'); return; }
   }
+
+  if (state.step === 3) {
+    const type = state.data.website_type || 'other';
+    const required = {
+      business: [['biz_services','services or products'],['biz_target','target audience'],['biz_goals','main goal']],
+      ecommerce: [['shop_products','products you will sell'],['shop_count','number of products'],['shop_target','target customer'],['shop_goals','what makes your store unique']],
+      portfolio: [['port_type','type of work'],['port_count','number of items'],['port_target','target audience']],
+      blog: [['blog_topics','topics/categories'],['blog_frequency','publishing frequency'],['blog_target','target audience']],
+      landing: [['land_goal','main goal'],['land_target','target audience'],['land_offer','offer/call to action']],
+      community: [['comm_purpose','community purpose'],['comm_target','target members']],
+      other: [['custom_desc','website description'],['custom_target','target audience'],['custom_goals','main goal']],
+    };
+    const checks = required[type] || required.other;
+    for (const [key, label] of checks) {
+      if (!hasVal(key)) { showStepError(`Please fill in: ${label}.`); return; }
+    }
+  }
+
+  if (state.step === 4) {
+    if (!hasVal('pages')) { showStepError('Please select at least one page your website needs.'); return; }
+    if (!hasVal('features')) { showStepError('Please select at least one feature.'); return; }
+    if (!hasVal('features_detail')) { showStepError('Please describe how the features you selected should work.'); return; }
+  }
+
+  if (state.step === 5) {
+    if (!state.data.style) { showStepError('Please select a design style.'); return; }
+  }
+
   state.step = Math.min(state.step + 1, TOTAL_STEPS);
   await save();
   render();
@@ -679,6 +769,9 @@ function goStep(n) {
 
 async function submitBrief() {
   collectCurrentStep();
+  clearStepError();
+  if (!hasVal('budget')) { showStepError('Please select a budget range.'); return; }
+  if (!hasVal('timeline')) { showStepError('Please select a timeline.'); return; }
   await save();
   if (!confirm('Ready to submit your brief? You can still message us afterward.')) return;
   const r = await api('POST', `brief?token=${state.token}&submit=1`);
