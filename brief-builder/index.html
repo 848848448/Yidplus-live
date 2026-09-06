@@ -84,10 +84,30 @@ select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%
 .file-item .remove:hover{background:var(--error-bg)}
 
 .review-section{margin-bottom:20px;padding:16px 20px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
-.review-section h3{font-size:.9rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.review-section.complete{border-color:var(--success)}
+.review-section.incomplete{border-color:var(--error)}
+.review-section h3{font-size:.9rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.review-section.complete h3{color:var(--success)}
+.review-section.incomplete h3{color:var(--error)}
 .review-section .edit-btn{font-size:.8rem;color:var(--primary);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500}
 .review-section p{font-size:.9rem;margin-bottom:4px}
 .review-section .val{font-weight:500}
+.review-section .status-icon{font-size:1rem;margin-right:6px}
+.cl-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:.9rem;border-bottom:1px solid var(--border)}
+.cl-row:last-child{border-bottom:none}
+.cl-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;margin-top:1px}
+.cl-icon.ok{background:var(--success-bg);color:var(--success)}
+.cl-icon.miss{background:var(--error-bg);color:var(--error)}
+.cl-label{color:var(--muted);min-width:100px;flex-shrink:0}
+.cl-val{flex:1;font-weight:500;word-break:break-word}
+.cl-val.empty{color:var(--error);font-weight:400;font-style:italic}
+.completion-bar{margin-bottom:24px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+.completion-bar .bar-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:8px}
+.completion-bar .bar-fill{height:100%;border-radius:4px;transition:width .4s;background:var(--success)}
+.completion-bar .bar-fill.low{background:var(--error)}
+.completion-bar .bar-fill.mid{background:#f59e0b}
+.completion-bar .pct{font-size:1.1rem;font-weight:700}
+.completion-bar .label{font-size:.85rem;color:var(--muted)}
 
 .status-page{text-align:center;padding:48px 24px}
 .status-icon{font-size:3rem;margin-bottom:16px}
@@ -474,54 +494,82 @@ function renderStep6(w) {
   bindUpload();
 }
 
+function clRow(label, value) {
+  const filled = typeof value === 'string' ? value.trim().length > 0 : Array.isArray(value) ? value.length > 0 : !!value;
+  const display = Array.isArray(value) ? value.join(', ') : (value || '');
+  return { filled, html: `<div class="cl-row"><span class="cl-icon ${filled ? 'ok' : 'miss'}">${filled ? '&#10003;' : '!'}</span><span class="cl-label">${label}</span><span class="cl-val${filled ? '' : ' empty'}">${filled ? escH(display) : 'Not filled in'}</span></div>` };
+}
+
 function renderStep7(w) {
   const d = state.data;
-  const type = TYPES.find(t => t.id === d.website_type)?.label || d.website_type || '—';
-  const style = STYLES.find(s => s.id === d.style)?.label || d.style || '—';
-  const pages = Array.isArray(d.pages) ? d.pages.join(', ') : '—';
-  const features = Array.isArray(d.features) ? d.features.join(', ') : '—';
+  const type = TYPES.find(t => t.id === d.website_type)?.label || d.website_type || '';
+  const style = STYLES.find(s => s.id === d.style)?.label || d.style || '';
+  const pages = Array.isArray(d.pages) ? d.pages : [];
+  const features = Array.isArray(d.features) ? d.features : [];
 
-  w.innerHTML = `<div class="step-card"><h2>Review Your Brief</h2><p class="subtitle">Make sure everything looks right before submitting</p>
+  const sections = [];
+  let totalFields = 0, filledFields = 0;
 
-    <div class="review-section">
-      <h3>Contact Info <span class="edit-btn" onclick="goStep(1)">Edit</span></h3>
-      <p><strong>Name:</strong> <span class="val">${escH(d.client_name)}</span></p>
-      <p><strong>Email:</strong> <span class="val">${escH(d.client_email)}</span></p>
-      ${d.client_phone ? `<p><strong>Phone:</strong> <span class="val">${escH(d.client_phone)}</span></p>` : ''}
-      ${d.business_name ? `<p><strong>Business:</strong> <span class="val">${escH(d.business_name)}</span></p>` : ''}
+  function section(title, step, rows) {
+    const allFilled = rows.every(r => r.filled);
+    const filled = rows.filter(r => r.filled).length;
+    totalFields += rows.length;
+    filledFields += filled;
+    sections.push(`<div class="review-section ${allFilled ? 'complete' : 'incomplete'}">
+      <h3><span><span class="status-icon">${allFilled ? '&#10003;' : '&#9888;'}</span>${title} (${filled}/${rows.length})</span><span class="edit-btn" onclick="goStep(${step})">Edit</span></h3>
+      ${rows.map(r => r.html).join('')}
+    </div>`);
+  }
+
+  section('Contact Info', 1, [
+    clRow('Name', d.client_name),
+    clRow('Email', d.client_email),
+    clRow('Phone', d.client_phone),
+    clRow('Business', d.business_name),
+  ]);
+
+  section('Website Type', 2, [
+    clRow('Type', type),
+    clRow('Description', d.website_desc),
+  ]);
+
+  const s3 = getStep3Checklist(d);
+  section('Specific Details', 3, s3);
+
+  section('Pages & Features', 4, [
+    clRow('Pages', pages),
+    clRow('Features', features),
+    clRow('Feature details', d.features_detail),
+  ]);
+
+  section('Design', 5, [
+    clRow('Style', style),
+    clRow('Colors', d.colors),
+    clRow('Inspiration sites', d.liked_sites),
+    clRow('Has logo', d.has_logo),
+    clRow('Brand guidelines', d.has_brand),
+  ]);
+
+  section('Content & Files', 6, [
+    clRow('Content ready', d.content_ready),
+    clRow('Images', d.has_images),
+    clRow('Files uploaded', state.uploads.length > 0 ? `${state.uploads.length} file${state.uploads.length > 1 ? 's' : ''}` : ''),
+  ]);
+
+  const pct = Math.round((filledFields / totalFields) * 100);
+  const barClass = pct < 50 ? 'low' : pct < 80 ? 'mid' : '';
+
+  w.innerHTML = `<div class="step-card"><h2>Review Your Brief</h2><p class="subtitle">Check that everything is filled in before submitting</p>
+
+    <div class="completion-bar">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span class="pct">${pct}%</span>
+        <span class="label">complete &mdash; ${filledFields} of ${totalFields} fields filled</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill ${barClass}" style="width:${pct}%"></div></div>
     </div>
 
-    <div class="review-section">
-      <h3>Website <span class="edit-btn" onclick="goStep(2)">Edit</span></h3>
-      <p><strong>Type:</strong> <span class="val">${escH(type)}</span></p>
-      ${d.website_desc ? `<p><strong>Description:</strong> ${escH(d.website_desc)}</p>` : ''}
-    </div>
-
-    <div class="review-section">
-      <h3>Specific Details <span class="edit-btn" onclick="goStep(3)">Edit</span></h3>
-      ${reviewStep3Details(d)}
-    </div>
-
-    <div class="review-section">
-      <h3>Pages & Features <span class="edit-btn" onclick="goStep(4)">Edit</span></h3>
-      <p><strong>Pages:</strong> ${escH(pages)}</p>
-      <p><strong>Features:</strong> ${escH(features)}</p>
-      ${d.features_detail ? `<p><strong>How features should work:</strong> ${escH(d.features_detail)}</p>` : ''}
-    </div>
-
-    <div class="review-section">
-      <h3>Design <span class="edit-btn" onclick="goStep(5)">Edit</span></h3>
-      <p><strong>Style:</strong> <span class="val">${escH(style)}</span></p>
-      ${d.colors ? `<p><strong>Colors:</strong> ${escH(d.colors)}</p>` : ''}
-      ${d.liked_sites ? `<p><strong>Inspiration:</strong> ${escH(d.liked_sites)}</p>` : ''}
-    </div>
-
-    <div class="review-section">
-      <h3>Content <span class="edit-btn" onclick="goStep(6)">Edit</span></h3>
-      <p><strong>Content ready:</strong> ${escH(d.content_ready || '—')}</p>
-      <p><strong>Images:</strong> ${escH(d.has_images || '—')}</p>
-      ${state.uploads.length ? `<p><strong>Files:</strong> ${state.uploads.length} uploaded</p>` : ''}
-    </div>
+    ${sections.join('')}
 
     <div class="field"><label>Budget range *</label>
       <select data-field="budget">
@@ -541,9 +589,9 @@ function renderStep7(w) {
   </div>`;
 }
 
-function reviewStep3Details(d) {
+function getStep3Checklist(d) {
   const type = d.website_type || 'other';
-  const fields = {
+  const map = {
     business: [['biz_services','Services/Products'],['biz_target','Target Audience'],['biz_goals','Main Goal'],['biz_locations','Locations']],
     ecommerce: [['shop_products','Products'],['shop_count','Product Count'],['shop_target','Target Customer'],['shop_goals','Unique Value']],
     portfolio: [['port_type','Work Type'],['port_count','Item Count'],['port_target','Target Audience']],
@@ -552,7 +600,7 @@ function reviewStep3Details(d) {
     community: [['comm_purpose','Purpose'],['comm_target','Target Members']],
     other: [['custom_desc','Description'],['custom_target','Target Audience'],['custom_goals','Main Goal'],['custom_examples','Similar Sites']],
   };
-  return (fields[type] || fields.other).filter(([k]) => d[k]).map(([k, label]) => `<p><strong>${label}:</strong> ${escH(d[k])}</p>`).join('');
+  return (map[type] || map.other).map(([k, label]) => clRow(label, d[k]));
 }
 
 function renderStatus() {
