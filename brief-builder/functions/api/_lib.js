@@ -98,3 +98,21 @@ export async function notify(env, subject, body) {
 
   await Promise.allSettled(promises);
 }
+
+export async function sendToClient(env, toEmail, subject, htmlBody) {
+  const resendKey = (env.RESEND_API_KEY || '').trim();
+  if (!resendKey || !toEmail) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+      body: JSON.stringify({
+        from: 'Brief Builder <briefs@resend.dev>',
+        to: [toEmail],
+        subject,
+        html: htmlBody,
+      }),
+    });
+    return r.ok;
+  } catch { return false; }
+}
